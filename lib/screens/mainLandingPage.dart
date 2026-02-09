@@ -688,6 +688,18 @@ class _MainLandingPageState extends State<MainLandingPage> {
                             UserProfileViewModel value,
                             Widget? child,
                           ) {
+// Single loading check at the top
+                            if (value.loading) {
+                              return Center(
+                                child: Padding(
+                                  padding: EdgeInsets.only(top: 30.h),
+                                  child: CircularProgressIndicator(
+                                    valueColor: AlwaysStoppedAnimation<Color>(AppColors.greenColor),
+                                  ),
+                                ),
+                              );
+                            }
+
                             role = value.userProfile?.data?.user?.role?.name ?? "-";
                             name = value.userProfile?.data?.user?.info?.name ?? "-";
                             String dueAmount =
@@ -886,7 +898,7 @@ class _MainLandingPageState extends State<MainLandingPage> {
                       builder: (context, userModel, child) {
                         final currentRole =
                             userModel.userProfile?.data?.user?.role?.name ?? "";
-                        // Show loading if still fetching
+                        /*// Show loading if still fetching
                         if (userModel.loading) {
                           return Center(
                             child: CircularProgressIndicator(
@@ -895,325 +907,335 @@ class _MainLandingPageState extends State<MainLandingPage> {
                               ),
                             ),
                           );
-                        }
+                        }*/
                 
-                        return Scrollbar(
-                          child: GridView.count(
-                            crossAxisCount: 4,
-                            shrinkWrap: true,
-                            physics: NeverScrollableScrollPhysics(),  // Keep this as is
-                            childAspectRatio:
-                            1.1, // Changed from 1.0 - gives more height
-                            // mainAxisSpacing: 0.h,
-                            /* crossAxisSpacing: 2.w,*/
-                            padding: EdgeInsets.zero,
-                            children: [
-                              if (currentRole != "Tenant")
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => MyUnits(),
-                                      ),
-                                    );
-                                  },
-                                  child: _buildMenuSVGItem(
-                                    icon: AppIcons.unit,
-                                    title: "My Unit",
-                                  ),
-                                ),
-                
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => MyLease(),
-                                    ),
-                                  );
-                                },
-                                child: _buildMenuSVGItem(
-                                  icon: AppIcons.leased,
-                                  title: "Leased",
-                                ),
-                              ),
-                
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Bills(role: role),
-                                    ),
-                                  );
-                                },
-                                child: _buildMenuSVGItem(
-                                  icon: AppIcons.bills,
-                                  title: "Bills",
-                                ),
-                              ),
-                
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Tickets(role: role),
-                                    ),
-                                  );
-                                },
-                                child: _buildMenuSVGItem(
-                                  icon: AppIcons.tickets,
-                                  title: "Tickets",
-                                ),
-                              ),
-                
-                              if (currentRole != "Owner")
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => GatePassRequests(),
-                                      ),
-                                    );
-                                  },
-                                  child: _buildMenuSVGItem(
-                                    icon: AppIcons.gatePasses,
-                                    title: "Gate Pass",
-                                  ),
-                                ),
-                
-                              if (currentRole != "Owner")
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Visitors(),
-                                      ),
-                                    );
-                                  },
-                                  child: _buildMenuSVGItem(
-                                    icon: AppIcons.visitor,
-                                    title: "Visitors",
-                                  ),
-                                ),
-                
-                              if (currentRole != "Owner")
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => UnitInspections(),
-                                      ),
-                                    );
-                                  },
-                                  child: _buildMenuSVGItem(
-                                    icon: AppIcons.inspections,
-                                    title: "Inspections",
-                                  ),
-                                ),
-                
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => Events(),
-                                    ),
-                                  );
-                                },
-                                child: _buildMenuSVGItem(
-                                  icon: AppIcons.function,
-                                  title: "Events",
-                                ),
-                              ),
-                
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => NoticeBoard(),
-                                    ),
-                                  );
-                                },
-                                child: _buildMenuSVGItem(
-                                  icon: AppIcons.notice,
-                                  title: "Notices",
-                                ),
-                              ),
-      
-                              if(hasViewAll)
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => LegalNotices(),
-                                    ),
-                                  );
-                                },
-                                child: _buildMenuSVGItem(
-                                  icon: AppIcons.legalNotice,
-                                  title: "Legal Notices",
-                                ),
-                              ),
-      
-                              if(hasViewAll)
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ViolationRecords(),
-                                    ),
-                                  );
-                                },
-                                child: _buildMenuSVGItem(
-                                  icon: AppIcons.violationRecords,
-                                  title: "Violations",
-                                ),
-                              ),
-      
-                              if(hasViewAll)
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => SocietyForums(),
-                                    ),
-                                  );
-                                },
-                                child: _buildMenuSVGItem(
-                                  icon: AppIcons.forums,
-                                  title: "Forums",
-                                ),
-                              ),
-                
-                              if (currentRole != "Owner" &&  hasViewAll)
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Amenities(),
-                                      ),
-                                    );
-                                  },
-                                  child: _buildMenuSVGItem(
-                                    icon: AppIcons.amenities,
-                                    title: "Amenities",
-                                  ),
-                                ),
-                
-                              if (currentRole != "Owner" && hasViewAll)
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Services(),
-                                      ),
-                                    );
-                                  },
-                                  child: _buildMenuSVGItem(
-                                    icon: AppIcons.services,
-                                    title: "Services",
-                                  ),
-                                ),
-                
-                              if (currentRole != "Owner" && hasViewAll)
-                                GestureDetector(
-                                  onTap: () {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => Bookings(),
-                                      ),
-                                    );
-                                  },
-                                  child: _buildMenuSVGItem(
-                                    icon: AppIcons.booking,
-                                    title: "Bookings",
-                                  ),
-                                ),
-      
-                              if(hasViewAll)
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ServicesSuspension(),
-                                    ),
-                                  );
-                                },
-                                child: _buildMenuSVGItem(
-                                  icon: AppIcons.services,
-                                  title: "Suspensions",
-                                ),
-                              ),
-      
-                            ],
-                          ),
-                        );
-                      },
-                    ),
-                    SizedBox(height: 1.5.h),
-                    GestureDetector(
-                      onTap: () {
-                        setState(() {
-                          hasViewAll = !hasViewAll;
-                        });
-                      },
-                      child: Container(
-                        padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.5.h),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
-                              offset: Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
+                        return !userModel.loading?
+                        Column(
                           children: [
-                            CustomText(
-                              text: hasViewAll ? "View Less" : "View All",
-                              style: basicColorBold(14, AppColors.greenColor),
+                            Scrollbar(
+                              child: GridView.count(
+                                crossAxisCount: 4,
+                                shrinkWrap: true,
+                                physics: NeverScrollableScrollPhysics(),  // Keep this as is
+                                childAspectRatio:
+                                1.1, // Changed from 1.0 - gives more height
+                                // mainAxisSpacing: 0.h,
+                                /* crossAxisSpacing: 2.w,*/
+                                padding: EdgeInsets.zero,
+                                children: [
+                                  if (currentRole != "Tenant")
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => MyUnits(),
+                                          ),
+                                        );
+                                      },
+                                      child: _buildMenuSVGItem(
+                                        icon: AppIcons.unit,
+                                        title: "My Unit",
+                                      ),
+                                    ),
+
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => MyLease(),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildMenuSVGItem(
+                                      icon: AppIcons.leased,
+                                      title: "Leased",
+                                    ),
+                                  ),
+
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Bills(role: role),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildMenuSVGItem(
+                                      icon: AppIcons.bills,
+                                      title: "Bills",
+                                    ),
+                                  ),
+
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Tickets(role: role),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildMenuSVGItem(
+                                      icon: AppIcons.tickets,
+                                      title: "Tickets",
+                                    ),
+                                  ),
+
+                                  if (currentRole != "Owner")
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => GatePassRequests(),
+                                          ),
+                                        );
+                                      },
+                                      child: _buildMenuSVGItem(
+                                        icon: AppIcons.gatePasses,
+                                        title: "Gate Pass",
+                                      ),
+                                    ),
+
+                                  if (currentRole != "Owner")
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Visitors(),
+                                          ),
+                                        );
+                                      },
+                                      child: _buildMenuSVGItem(
+                                        icon: AppIcons.visitor,
+                                        title: "Visitors",
+                                      ),
+                                    ),
+
+                                  if (currentRole != "Owner")
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => UnitInspections(),
+                                          ),
+                                        );
+                                      },
+                                      child: _buildMenuSVGItem(
+                                        icon: AppIcons.inspections,
+                                        title: "Inspections",
+                                      ),
+                                    ),
+
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => Events(),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildMenuSVGItem(
+                                      icon: AppIcons.function,
+                                      title: "Events",
+                                    ),
+                                  ),
+
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => NoticeBoard(),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildMenuSVGItem(
+                                      icon: AppIcons.notice,
+                                      title: "Notices",
+                                    ),
+                                  ),
+
+                                  if(hasViewAll)
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => LegalNotices(),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildMenuSVGItem(
+                                      icon: AppIcons.legalNotice,
+                                      title: "Legal Notices",
+                                    ),
+                                  ),
+
+                                  if(hasViewAll)
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ViolationRecords(),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildMenuSVGItem(
+                                      icon: AppIcons.violationRecords,
+                                      title: "Violations",
+                                    ),
+                                  ),
+
+                                  if(hasViewAll)
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => SocietyForums(),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildMenuSVGItem(
+                                      icon: AppIcons.forums,
+                                      title: "Forums",
+                                    ),
+                                  ),
+
+                                  if (currentRole != "Owner" &&  hasViewAll)
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Amenities(),
+                                          ),
+                                        );
+                                      },
+                                      child: _buildMenuSVGItem(
+                                        icon: AppIcons.amenities,
+                                        title: "Amenities",
+                                      ),
+                                    ),
+
+                                  if (currentRole != "Owner" && hasViewAll)
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Services(),
+                                          ),
+                                        );
+                                      },
+                                      child: _buildMenuSVGItem(
+                                        icon: AppIcons.services,
+                                        title: "Services",
+                                      ),
+                                    ),
+
+                                  if (currentRole != "Owner" && hasViewAll)
+                                    GestureDetector(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (context) => Bookings(),
+                                          ),
+                                        );
+                                      },
+                                      child: _buildMenuSVGItem(
+                                        icon: AppIcons.booking,
+                                        title: "Bookings",
+                                      ),
+                                    ),
+
+                                  if(hasViewAll)
+                                  GestureDetector(
+                                    onTap: () {
+                                      Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => ServicesSuspension(),
+                                        ),
+                                      );
+                                    },
+                                    child: _buildMenuSVGItem(
+                                      icon: AppIcons.services,
+                                      title: "Suspensions",
+                                    ),
+                                  ),
+
+                                ],
+                              ),
                             ),
-                            SizedBox(width: 0.w),
-                            Icon(
-                              hasViewAll
-                                  ? Icons.keyboard_arrow_up_rounded
-                                  : Icons.keyboard_arrow_down_rounded,
-                              color: AppColors.greenColor,
-                              size: 20,
+                            SizedBox(height: 1.5.h),
+
+
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  hasViewAll = !hasViewAll;
+                                });
+                              },
+                              child: Container(
+                                padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.5.h),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(20),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.1),
+                                      blurRadius: 8,
+                                      offset: Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    CustomText(
+                                      text: hasViewAll ? "View Less" : "View All",
+                                      style: basicColorBold(14, AppColors.greenColor),
+                                    ),
+                                    SizedBox(width: 0.w),
+                                    Icon(
+                                      hasViewAll
+                                          ? Icons.keyboard_arrow_up_rounded
+                                          : Icons.keyboard_arrow_down_rounded,
+                                      color: AppColors.greenColor,
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ],
-                        ),
-                      ),
+                        ):Container();
+                      },
                     ),
+
                     SizedBox(height: 1.5.h),
+
+
       
                     Consumer<UserProfileViewModel>(builder: (BuildContext context, UserProfileViewModel userModel, Widget? child) {
-                      if (userModel.loading) {
+                    /*  if (userModel.loading) {
                         return Center(
                           child: CircularProgressIndicator(
                             valueColor: AlwaysStoppedAnimation<Color>(AppColors.greenColor),
                           ),
                         );
-                      }
-                      else if (userModel.userProfile == null) {
+                      }*/
+                       if (userModel.userProfile == null) {
                         return Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -1231,8 +1253,8 @@ class _MainLandingPageState extends State<MainLandingPage> {
                       String healthPercent =
                           userModel.healthModel?.health?.percentage?.toString() ?? "-";
                       String healthStatus = userModel.healthModel?.health?.status ?? "-";
-                
-                      return _buildAccountHealthCard(healthPercent,healthStatus,userModel);
+
+                      return !userModel.loading?_buildAccountHealthCard(healthPercent,healthStatus,userModel):Container();
                     },),
                 
                 
@@ -1462,15 +1484,9 @@ class _MainLandingPageState extends State<MainLandingPage> {
 
 
   Widget profileCard(UserProfileViewModel userModel, String dueAmount) {
-    if (userModel.loading) {
-      return Center(
-        child: CircularProgressIndicator(
-          valueColor: AlwaysStoppedAnimation<Color>(AppColors.greenColor),
-        ),
-      );
-    }
+
     // Show error/empty message if profile is null
-    else if (userModel.userProfile == null) {
+     if (userModel.userProfile == null) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

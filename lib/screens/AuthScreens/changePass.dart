@@ -62,6 +62,10 @@ class _ChangePasswordState extends State<ChangePassword> {
             decoration: BoxDecoration(
               color: AppColors.white,
 
+              image: DecorationImage(
+                image: AssetImage(AppImages.newBg), // Your image path
+                fit: BoxFit.cover, // or BoxFit.fill, BoxFit.contain based on your need
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.25),  // Dark soft shadow
@@ -74,7 +78,7 @@ class _ChangePasswordState extends State<ChangePassword> {
             child: Stack(
               children: [
 
-                /// GREEN BOTTOM AREA
+               /* /// GREEN BOTTOM AREA
                 Positioned(
                   left: 0.w,
                   right: 0.w,
@@ -98,7 +102,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                       height: 63.h,
                     ),
                   ),
-                ),
+                ),*/
 
                 Positioned(
                   top: 4.h,
@@ -108,7 +112,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                     onTap: (){
                       Navigator.pop(context);
                     },
-                      child: Icon(Icons.arrow_back_ios_new,color: Colors.white,))
+                      child: Icon(Icons.arrow_back_ios_new,color: AppColors.iconColor,))
                 ),
 
 
@@ -117,19 +121,19 @@ class _ChangePasswordState extends State<ChangePassword> {
                     top: 10.h,
                     left: 0.w,
                     right: 0.w,
-                    child:Center(child: Image.asset(AppImages.rectangle,height: 21.h,fit: BoxFit.cover,))
+                    child:Center(child: Image.asset(AppImages.splashScreenLogo,fit: BoxFit.contain,height: 15.h))
                 ),
 
-                Positioned(
+              /*  Positioned(
                     top: 13.h,
                     left: 0.w,
                     right: 0.w,
                     child:Center(child: Image.asset(AppImages.splashimg,fit: BoxFit.cover,height: 21.h,))
-                ),
+                ),*/
 
 
                 Positioned(
-                  top: 44.h,
+                  top: 30.h,
                   left: 0,
                   right: 0,
                   child: Center(
@@ -140,19 +144,19 @@ class _ChangePasswordState extends State<ChangePassword> {
                 ),
 
                 Positioned(
-                  top: 48.h,
+                  top: 36.h,
                   left: 10.w,
                   right: 10.w,
                   child: Center(
                     child:CustomText(
                         align: TextAlign.center,
                         text: "Enter your old password in order to change the password",
-                        style: basicColor(16, AppColors.hintText)),
+                        style: basicColor(16, AppColors.iconColor)),
                   ),
                 ),
 
                 Positioned(
-                  top: 57.h,
+                  top: 45.h,
                   left: 10.w,
                   right: 10.w,
                   child:
@@ -166,7 +170,7 @@ class _ChangePasswordState extends State<ChangePassword> {
 
 
                 Positioned(
-                    top: 65.h,
+                    top: 53.h,
                     left: 10.w,
                     right: 10.w,
                     child:
@@ -181,7 +185,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                 ),
 
                 Positioned(
-                  top: 73.h,
+                  top: 61.h,
                   left: 10.w,
                   right: 10.w,
                   child:
@@ -195,7 +199,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                 ),
 
                 Positioned(
-                    top: 83.h,
+                    top: 73.h,
                     left: 10.w,
                     right: 10.w,
                     child:

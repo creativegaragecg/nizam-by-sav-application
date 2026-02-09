@@ -63,7 +63,10 @@ class _LoginScreenState extends State<LoginScreen> {
             width: 100.w,
             decoration: BoxDecoration(
               color: AppColors.white,
-
+              image: DecorationImage(
+                image: AssetImage(AppImages.newBg), // Your image path
+                fit: BoxFit.cover, // or BoxFit.fill, BoxFit.contain based on your need
+              ),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.25),  // Dark soft shadow
@@ -76,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
             child: Stack(
               children: [
 
-                /// GREEN BOTTOM AREA
+                /*/// GREEN BOTTOM AREA
                 Positioned(
                   left: 0.w,
                   right: 0.w,
@@ -101,22 +104,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                 ),
-
+*/
 
 
                 Positioned(
                     top: 7.h,
-                    left: 35.w,
-                    right: 35.w,
-                    child:Image.asset(AppImages.rectangle,fit: BoxFit.fill,height: 13.h,)
+                    left: 0.w,
+                    right: 0.w,
+                    child:Image.asset(AppImages.splashScreenLogo,fit: BoxFit.contain,height: 15.h,)
                 ),
 
-                Positioned(
-                    top: 9.h,
-                    left: 35.w,
-                    right: 35.w,
-                    child:Image.asset(AppImages.splashimg,fit: BoxFit.fill,height: 13.h,)
-                ),
+
 
                 Positioned(
                   top: 24.h,
@@ -127,7 +125,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         text: "Welcome By Nizaam of",
 
                         //     text:"${AppLocalizations.of(context)!.login} ${AppLocalizations.of(context)!.to} ${AppLocalizations.of(context)!.continueButton}",
-                        style: basicColorBold(17, Colors.white)),
+                        style: basicColorBold(18, AppColors.iconColor)),
                   ),
                 ),
 
@@ -140,7 +138,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         text: "${widget.societyName}",
 
                         //     text:"${AppLocalizations.of(context)!.login} ${AppLocalizations.of(context)!.to} ${AppLocalizations.of(context)!.continueButton}",
-                        style: basicColorBold(17, Colors.white)),
+                        style: basicColorBold(18, AppColors.iconColor)),
                   ),
                 ),
 
@@ -162,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
                 Positioned(
-                  top: 53.h,
+                  top: 48.h,
                   left: 17.w,
                   right: 17.w,
                   child:
@@ -171,7 +169,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
 
                 Positioned(
-                  top: 60.h,
+                  top: 57.h,
                   left: 17.w,
                   right: 17.w,
                   child:
@@ -185,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
 
                 Positioned(
-                    top: 72.h,
+                    top: 68.h,
                     left: 17.w,
                     right: 17.w,
                     child:

@@ -65,7 +65,8 @@ class AppColors {
   static Color white=const Color.fromRGBO(247, 247, 247, 1);
   static Color hintText=const Color.fromRGBO(151, 151, 151, 1);
   static Color iconGreyColor=const Color.fromRGBO(171, 171, 171, 1);
-  static Color buttonColor=const Color.fromRGBO(67, 188, 78, 1);
+  //static Color buttonColor=const Color.fromRGBO(67, 188, 78, 1);
+  static Color buttonColor=const Color.fromRGBO(61,113,71,1);
   static Color yellowColor=const Color.fromRGBO(255, 252, 200, 1);
   static Color cornerGreyColor=const Color.fromRGBO(212, 212, 212, 1);
   static Color seaGreenColor=const Color.fromRGBO(222, 247, 236, 1);
