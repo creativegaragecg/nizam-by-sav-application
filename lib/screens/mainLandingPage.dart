@@ -24,7 +24,7 @@ import 'package:savvyions/screens/Services/Services.dart';
 import 'package:savvyions/screens/UnitInspection/unitInspections.dart';
 import 'package:savvyions/screens/Violations/violations.dart';
 import 'package:savvyions/screens/Visitor/visitor.dart';
-import 'package:savvyions/screens/bills.dart';
+import 'package:savvyions/screens/Bills/bills.dart';
 import 'package:savvyions/screens/GatePassRequests/gatePass.dart';
 import 'package:savvyions/screens/events.dart';
 import 'package:savvyions/screens/Lease/lease.dart';
@@ -913,7 +913,8 @@ class _MainLandingPageState extends State<MainLandingPage> {
                         Column(
                           children: [
                             Scrollbar(
-                              child: GridView.count(
+                              child:
+                              GridView.count(
                                 crossAxisCount: 4,
                                 shrinkWrap: true,
                                 physics: NeverScrollableScrollPhysics(),  // Keep this as is

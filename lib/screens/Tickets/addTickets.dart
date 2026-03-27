@@ -327,7 +327,49 @@ class _AddTicketState extends State<AddTicket> {
                           mainAxisAlignment: MainAxisAlignment.end
                           ,
                           children: [
-                            CustomButton(width: 20.w,color: AppColors.greenColor, text: "Save", style: basicColorBold(15, Colors.white),onPressedCallback: (){
+                            CustomButton(
+                              width: 20.w,
+                              color: value.loading ? AppColors.iconGreyColor : AppColors.greenColor,
+                              text: value.loading ? "Saving" : "Save",
+                              style: basicColorBold(15, Colors.white),
+                              onPressedCallback: value.loading ? null : () {
+                                String subjectText = subject.text.trim();
+                                String descText = description.text.trim();
+
+                                if (selectedTenant != null &&
+                                    selectedType != null &&
+                                    subjectText.isNotEmpty &&
+                                    descText.isNotEmpty) {
+
+                                  String roleName = user.userProfile?.data?.user?.role?.name ?? "";
+
+                                  var data = {
+                                    "party_type": roleName.toLowerCase(),
+                                    "party_id": selectedTenantId,
+                                    "type_id": selectedTypeId,
+                                    "subject": subjectText,
+                                    "description": descText,
+                                    "files": []
+                                  };
+
+                                  debugPrint('Submitting ticket data: $data');
+
+                                  // Only call ONE method based on whether there's a file or not
+                                  if (selectedFile != null) {
+                                    debugPrint('With file: ${selectedFile!.name}');
+                                    value.addTicketWithFile(data, context, file: selectedFile);
+                                  } else {
+                                    // No file, use the regular method
+                                    value.addTickets(data, context);
+                                  }
+                                } else {
+                                  showToast("Please fill all required fields");
+                                }
+                              },
+                            ),
+
+/*
+                            CustomButton(width: 20.w,color:value.loading?AppColors.iconGreyColor: AppColors.greenColor, text: value.loading?"Saving":"Save", style: basicColorBold(15, Colors.white),onPressedCallback:value.loading?null: (){
                            String subjectText=subject.text.trim();
                            String descText=description.text.trim();
 
@@ -359,7 +401,8 @@ class _AddTicketState extends State<AddTicket> {
                              else{
                                showToast("Please fill all required fills");
                              }
-                              /*{
+                              */
+/*{
                                 "tenant_id":3,
                                 "type_id": 2,
                                 "agent_id": 5,
@@ -367,8 +410,10 @@ class _AddTicketState extends State<AddTicket> {
                                 "subject": "Water Issue",
                                 "description": "There's a water leak in my bathroom",
                                 "files": []
-                              }*/
+                              }*//*
+
                             },),
+*/
                             SizedBox(width: 4.w,),
                             CustomButton(width: 20.w,color: AppColors.white, text: "Cancel", style: basicColorBold(15, Colors.black),
                             onPressedCallback: (){

@@ -80,4 +80,9 @@ class AppEndPoints {
   static String get ownerPayment => '${baseUrl}owner/payments';
   static String get book => '${baseUrl}amenities/book';
   static String get acknowledge => '${baseUrl}emergency-acknowledge';
+  static String get paymentMethods => '${baseUrl}rent/payment-methods';
+  static String get initiatePaymentMethods => '${baseUrl}rent/initiate-payment';
+  static String get offlinePayments => '${baseUrl}rent/offline-payment';
+
+
 }

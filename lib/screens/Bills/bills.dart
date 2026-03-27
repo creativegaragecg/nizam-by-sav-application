@@ -1,13 +1,18 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savvyions/providers/bills_provider.dart';
-import '../Utils/Constants/colors.dart';
-import '../Utils/Constants/styles.dart';
-import '../Utils/Constants/utils.dart';
-import '../Utils/Custom/customBgScreen.dart';
-import '../Utils/Custom/custom_text.dart';
+import 'package:savvyions/screens/Bills/payment%20methods.dart';
+import '../../Utils/Constants/colors.dart';
+import '../../Utils/Constants/styles.dart';
+import '../../Utils/Constants/utils.dart';
+import '../../Utils/Custom/customBgScreen.dart';
+import '../../Utils/Custom/custom_text.dart';
 import 'package:webview_flutter/webview_flutter.dart';
+
+import '../../models/payment methods.dart';
 
 class Bills extends StatefulWidget {
   const Bills({super.key, required this.role});
@@ -28,6 +33,101 @@ class _BillsState extends State<Bills> {
       print("Role name : ${widget.role}");
     });
   }
+
+  Future<void> _handlePaymentClick(BillsViewModel bills, dynamic billId) async {
+    // Store the navigator and scaffold messenger BEFORE any async operations
+    final navigatorState = Navigator.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    var data = {
+      "rent_id": billId
+    };
+
+    await bills.fetchPaymentMethods(context, data);
+
+    if (!mounted) return;
+
+    if (bills.methodsModel != null &&
+        bills.methodsModel!.success == true &&
+        bills.methodsModel!.data != null &&
+        bills.methodsModel!.data!.paymentMethods != null &&
+        bills.methodsModel!.data!.paymentMethods!.isNotEmpty) {
+
+      showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext dialogContext) {
+          return PaymentMethodsDialog(
+            paymentMethodsData: bills.methodsModel!,
+            onMethodSelected: (PaymentMethod selectedMethod) async {
+              // Close dialog first
+              if (selectedMethod.type == "offline")
+                Navigator.pop(dialogContext);
+
+              // Wait for dialog to close completely
+              if (selectedMethod.type == "offline")
+                  await Future.delayed(Duration(milliseconds: 200));
+
+              // Use a callback to navigate after dialog closes
+              if (selectedMethod.type == "offline") {
+              // Get the amount from the bill
+              String billAmount = bills.methodsModel!.data?.amount ?? "0";
+
+              bills.handleOfflinePayment(
+              context,
+              selectedMethod,
+              billId ?? 0,
+              billAmount,
+              );
+              } else {
+                // Handle online payment
+                var paymentData = {
+                  "rent_id": billId,
+                  "payment_method": selectedMethod.name?.toLowerCase() ?? ""
+                };
+
+                print("🟢 Initiating payment for ${selectedMethod.name}");
+                dynamic response = await bills.fetchInitiateMethods(context, paymentData);
+                print("🟢 Payment response received: $response");
+
+                if (response != null) {
+                  Map<String, dynamic> parsedResponse;
+                  if (response is String) {
+                    parsedResponse = json.decode(response);
+                  } else {
+                    parsedResponse = response as Map<String, dynamic>;
+                  }
+
+                  if (parsedResponse['success'] == true && parsedResponse['data'] != null) {
+                    String paymentUrl = parsedResponse['data']['payment_url'];
+                    print("🟢 Navigating to payment URL: $paymentUrl");
+
+                    // Use the stored navigator instead of context
+                    navigatorState.push(
+                      MaterialPageRoute(
+                        builder: (ctx) => WebViewScreen(url: paymentUrl,role: widget.role,),
+                      ),
+                    );
+                    print("🟢 Navigation completed");
+                  } else {
+                    String errorMessage = parsedResponse['message'] ?? "Failed to initiate payment";
+                    print("🔴 Payment error: $errorMessage");
+                    showToast(errorMessage);
+                  }
+                } else {
+                  print("🔴 Response is null");
+                  showToast("Failed to initiate payment");
+                }
+              }
+            },
+          );
+        },
+      );
+    } else {
+      showToast("Failed to load payment methods or no methods available");
+    }
+  }
+
 
   Future<void> fetchBills() async {
     var provider=  Provider.of<BillsViewModel>(
@@ -251,15 +351,7 @@ class _BillsState extends State<Bills> {
                                     flex: 12,
                                     child: GestureDetector(
                                       onTap: status.toLowerCase() == "unpaid"
-                                          ? () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (context) =>
-                                                WebViewScreen(url: dummyPaymentUrl),
-                                          ),
-                                        );
-                                      }
+                                          ? () => _handlePaymentClick(bills, bill.id)
                                           : null,
                                       child: Container(
                                         padding: EdgeInsets.symmetric(horizontal: 1.5.w),
@@ -388,7 +480,6 @@ class _BillsState extends State<Bills> {
                                   ? Colors.red
                                   : Colors.orange;
 
-                              String dummyPaymentUrl = "https://stripe.com";
 
                               return Container(
                                 decoration: BoxDecoration(
@@ -433,15 +524,7 @@ class _BillsState extends State<Bills> {
                                       flex: 12,
                                       child: GestureDetector(
                                         onTap: status.toLowerCase() == "unpaid"
-                                            ? () {
-                                          Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                              builder: (context) =>
-                                                  WebViewScreen(url: dummyPaymentUrl),
-                                            ),
-                                          );
-                                        }
+                                            ? () => _handlePaymentClick(bills, bill.id)
                                             : null,
                                         child: Container(
                                           padding: EdgeInsets.symmetric(horizontal: 1.5.w),
@@ -480,9 +563,60 @@ class _BillsState extends State<Bills> {
   }
 }
 
-class WebViewScreen extends StatelessWidget {
+class WebViewScreen extends StatefulWidget {
   final String url;
-  const WebViewScreen({required this.url, super.key});
+  final String role;
+  const WebViewScreen({required this.url,required this.role, super.key});
+
+  @override
+  State<WebViewScreen> createState() => _WebViewScreenState();
+}
+
+class _WebViewScreenState extends State<WebViewScreen> {
+  late final WebViewController _controller;
+
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = WebViewController()
+      ..setJavaScriptMode(JavaScriptMode.unrestricted)
+      ..setNavigationDelegate(
+        NavigationDelegate(
+          onUrlChange: (UrlChange change) {
+            final url = change.url?.toLowerCase() ?? '';
+            if (_isSuccessUrl(url)) {
+              if (mounted) {
+                Navigator.pop(context); // auto navigate back
+                showToast("Payment Successful!");
+                var provider=  Provider.of<BillsViewModel>(
+                  context,
+                  listen: false,
+                );
+                if(widget.role=="Tenant"){
+                  provider.fetchBills(context);
+                }
+                else if(widget.role=="Owner"){
+                  provider.fetchOwnerBills(context);
+                }
+              }
+            }
+          },
+        ),
+      )
+      ..loadRequest(Uri.parse(widget.url));
+  }
+
+  bool _isSuccessUrl(String url) {
+    // Adjust these keywords to match your payment gateway's success redirect URL
+    return url.contains('success') ||
+        url.contains('payment-success') ||
+        url.contains('payment_success') ||
+        url.contains('complete') ||
+        url.contains('thankyou') ||
+        url.contains('thank-you') || url.contains('finish');
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -494,11 +628,7 @@ class WebViewScreen extends StatelessWidget {
           style: basicColorBold(18, Colors.white),
         ),
       ),
-      body: WebViewWidget(
-        controller: WebViewController()
-          ..setJavaScriptMode(JavaScriptMode.unrestricted)
-          ..loadRequest(Uri.parse(url)),
-      ),
+      body: WebViewWidget(controller: _controller),
     );
   }
 }
