@@ -2,10 +2,12 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:savvyions/models/gatepassrequests.dart';
+import 'package:savvyions/models/visitor%20detail.dart';
 import 'package:savvyions/models/visitor.dart';
 import 'package:savvyions/models/visitorAppartment.dart';
 import 'package:savvyions/repository/gatepass_repository.dart';
 import 'package:savvyions/repository/visitor_repository.dart';
+import 'package:savvyions/screens/Visitor/visitorDetail.dart';
 import '../Utils/Constants/utils.dart';
 import '../models/gatePassTypes.dart';
 import '../models/visitorTypes.dart';
@@ -26,6 +28,9 @@ class VisitorViewModel extends ChangeNotifier {
   VisitorModel? _visitorModel;
   VisitorModel? get visitorModel => _visitorModel;
 
+VisitorDetailModel? _visitorDetailModel;
+  VisitorDetailModel? get visitorDetailModel => _visitorDetailModel;
+
   VisitorAppartmentModel? _visitorAppartmentModel;
   VisitorAppartmentModel? get visitorAppartmentModel => _visitorAppartmentModel;
 
@@ -45,6 +50,20 @@ class VisitorViewModel extends ChangeNotifier {
       debugPrint("Failed to load visitors: ${e.toString()}");
       setLoading(false);
       _visitorModel = null;
+    }
+  }
+
+  Future<void> fetchVisitorDetails(BuildContext context,String id) async {
+    try {
+      setLoading(true);
+      final response = await _myRepo.getVisitorDetails(id);
+      _visitorDetailModel = response;
+      setLoading(false);
+      notifyListeners();
+    } catch (e) {
+      debugPrint("Failed to load visitor details: ${e.toString()}");
+      setLoading(false);
+      _visitorDetailModel = null;
     }
   }
 

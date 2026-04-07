@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
@@ -38,7 +37,6 @@ class _OfflinePaymentDialogState extends State<OfflinePaymentDialog> {
   void initState() {
     super.initState();
     _selectedPaymentMethod = widget.method.name;
-    print("mehtodsasasd:${widget.method.id}");
   }
 
   @override

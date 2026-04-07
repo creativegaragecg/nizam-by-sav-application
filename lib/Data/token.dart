@@ -4,6 +4,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class UserToken with ChangeNotifier {
   static String token = "";
+  static String currency = "";
   static int user_id = 0;
   static String user_name = "";
   static String user_email = "";
@@ -13,7 +14,7 @@ class UserToken with ChangeNotifier {
   void setUserToken({required String? token,required String? url}) async {
     debugPrint("TOKEN SET: $token");
     token = token;
-    AppEndPoints.baseUrl=url!;
+    AppEndPoints.baseUrl=url??"";
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_token', token??"");
     await prefs.setString('baseUrl', url??"");
@@ -33,6 +34,22 @@ class UserToken with ChangeNotifier {
     prefs.setString('userEmail', userEmail);
 
   }
+
+  void setCurrency({required String symbol}) async {
+    currency=symbol;
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('currency',currency);
+
+  }
+  Future<void> loadUserCurrency() async {
+    final prefs = await SharedPreferences.getInstance();
+    currency = prefs.getString('currency') ?? "";
+
+    debugPrint("Currency load: $currency");
+
+  }
+
+
   Future<void> loadUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
     user_id = prefs.getInt('userId') ?? 0;

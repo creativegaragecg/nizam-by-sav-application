@@ -4,11 +4,9 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savvyions/Utils/Custom/customWhiteBg.dart';
 import 'package:savvyions/Utils/Custom/custom_button.dart';
 import 'package:savvyions/providers/amenities_provider.dart';
-
 import '../../Utils/Constants/colors.dart';
 import '../../Utils/Constants/styles.dart';
 import '../../Utils/Constants/utils.dart';
-import '../../Utils/Custom/customBgScreen.dart';
 
 import '../../Utils/Custom/custom_text.dart';
 
@@ -35,8 +33,7 @@ class _BookAmenityState extends State<BookAmenity> {
   @override
   void initState() {
     super.initState();
-    // Parse maxPersons safely
-    maxPersonsInt = int.tryParse(widget.maxPersons) ?? 1; // default to 1 if parsing fails
+    maxPersonsInt = int.tryParse(widget.maxPersons) ?? 1;
   }
 
 

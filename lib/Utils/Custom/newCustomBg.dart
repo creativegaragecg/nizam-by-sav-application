@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import '../Constants/colors.dart';
 
-// Custom Clipper for the curved bottom effect
 class CurvedBottomClipper extends CustomClipper<Path> {
   @override
   Path getClip(Size size) {

@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
+import 'package:savvyions/Data/token.dart';
 import 'package:savvyions/Utils/Constants/colors.dart';
 import 'package:savvyions/Utils/Constants/icons.dart';
 import 'package:savvyions/Utils/Constants/images.dart';
@@ -32,6 +33,7 @@ import 'package:savvyions/screens/Units/myUnits.dart';
 import 'package:savvyions/screens/noticeBoard.dart';
 import 'package:savvyions/screens/Tickets/tickets.dart';
 import 'package:savvyions/screens/notifications.dart';
+import '../Services/Sos Service.dart';
 import '../Utils/Custom/customGreenBg.dart';
 import '../l10n/app_localizations.dart';
 import '../providers/bills_provider.dart';
@@ -77,6 +79,9 @@ class _MainLandingPageState extends State<MainLandingPage> {
       fetchUserData();
     });
   }
+
+  // In your main widget or after login success, start polling and listen:
+
 
   // Add this method to your MainLandingPage State class
   void showImportantNotificationsDialog(BuildContext context) {
@@ -184,6 +189,8 @@ class _MainLandingPageState extends State<MainLandingPage> {
         // Get the role from the fetched profile
         final currentRole = user.userProfile?.data?.user?.role?.name ?? "";
         print("Roleeeee:$currentRole");
+        final currency=user.userProfile?.data?.currency?.symbol??"";
+        UserToken().setCurrency(symbol: currency);
 
         // Now fetch bills with the correct role
         if (currentRole.isNotEmpty) {
@@ -196,6 +203,8 @@ class _MainLandingPageState extends State<MainLandingPage> {
           });
         }
       });
+      UserToken().loadUserCurrency();
+
       user.fetchDueAmount(context);
       user.fetchHealth(context);
       Provider.of<NotificationsViewModel>(
@@ -216,6 +225,9 @@ class _MainLandingPageState extends State<MainLandingPage> {
 
   void checkAndShowUnpaidBills(String userRole) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
+      // ✅ Add this guard at the very top
+      if (!mounted) return;
+
       Provider.of<EventsViewModel>(context, listen: false).fetchEvents(context);
       Provider.of<LegalNoticesViewModel>(
         context,
@@ -240,6 +252,7 @@ class _MainLandingPageState extends State<MainLandingPage> {
 
       if (unpaidBills.isNotEmpty) {
         Future.delayed(Duration(milliseconds: 800), () {
+          // ✅ Also guard here before showing dialog
           if (mounted) {
             showUnpaidBillsPopup(context, unpaidBills, userRole);
           }
@@ -247,6 +260,7 @@ class _MainLandingPageState extends State<MainLandingPage> {
       }
     });
   }
+
 
   // Add this method to your MainLandingPage State class
   void showUnpaidBillsPopup(
@@ -1398,6 +1412,8 @@ class _MainLandingPageState extends State<MainLandingPage> {
   }
 
   Widget _buildCircularProgress(String percent) {
+    double percentValue = double.tryParse(percent) ?? 0;
+
     return SizedBox(
       width: 25.w,
       height: 25.w,
@@ -1408,7 +1424,7 @@ class _MainLandingPageState extends State<MainLandingPage> {
             width: 100,
             height: 100,
             child: CircularProgressIndicator(
-              value: 0.85,
+              value: percentValue/100,
               strokeWidth: 8,
               backgroundColor:AppColors.iconGreyColor.withOpacity(0.2),
               valueColor:  AlwaysStoppedAnimation<Color>(
@@ -1524,7 +1540,7 @@ class _MainLandingPageState extends State<MainLandingPage> {
       color:AppColors.newColor,
       radius: 25,
       child: Container(
-        padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 4.w),
+        padding: EdgeInsets.symmetric(vertical: 2.h, horizontal: 2.5.w),
 
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -1534,90 +1550,89 @@ class _MainLandingPageState extends State<MainLandingPage> {
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      backgroundColor: Colors.lightBlueAccent,
-                      radius: 30,
-                      child: userPic.isNotEmpty && userPic != "N/A"
-                          ? ClipOval(
-                              child: Image.network(
-                                userPic,
-                                fit: BoxFit.cover,
-                                width: 60,
-                                height: 60,
-                                errorBuilder: (context, error, stackTrace) {
-                                  return Image.asset(
-                                    AppImages.dummyImage,
-                                    fit: BoxFit.cover,
-                                  );
-                                },
-                                loadingBuilder: (context, child, loadingProgress) {
-                                  if (loadingProgress == null) return child;
-                                  return Center(
-                                    child: CircularProgressIndicator(
-                                      value:
-                                          loadingProgress.expectedTotalBytes != null
-                                          ? loadingProgress.cumulativeBytesLoaded /
-                                                loadingProgress.expectedTotalBytes!
-                                          : null,
-                                    ),
-                                  );
-                                },
-                              ),
-                            )
-                          : Image.asset(AppImages.dummyImage, fit: BoxFit.cover),
-                    ),
-                    SizedBox(width: 3.w),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: EdgeInsets.only(top: 0.5.h),
-                          child: CustomText(
-                            //  align: TextAlign.left,
-                            text: companyName,
-                            style: basicColorBold(15.5, Colors.black87),
+                // ✅ Wrap this in Expanded
+                Expanded(
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: Colors.lightBlueAccent,
+                        radius: 30,
+                        child: userPic.isNotEmpty && userPic != "N/A"
+                            ? ClipOval(
+                          child: Image.network(
+                            userPic,
+                            fit: BoxFit.cover,
+                            width: 60,
+                            height: 60,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(AppImages.dummyImage, fit: BoxFit.cover);
+                            },
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(
+                                child: CircularProgressIndicator(
+                                  value: loadingProgress.expectedTotalBytes != null
+                                      ? loadingProgress.cumulativeBytesLoaded /
+                                      loadingProgress.expectedTotalBytes!
+                                      : null,
+                                ),
+                              );
+                            },
                           ),
+                        )
+                            : Image.asset(AppImages.dummyImage, fit: BoxFit.cover),
+                      ),
+                      SizedBox(width: 3.w),
+                      // ✅ Also Expanded here so text columns don't overflow
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Padding(
+                              padding: EdgeInsets.only(top: 0.5.h),
+                              child: CustomText(
+                                text: companyName,
+                                style: basicColorBold(15.5, Colors.black87),
+                                overflow: TextOverflow.ellipsis, // ✅ prevent long text overflow
+                              ),
+                            ),
+                            SizedBox(height: 0.5.h),
+                            CustomText(
+                              text: email,
+                              style: basicColor(14.5, Colors.black87),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 0.5.h),
+                            CustomText(
+                              text: phoneNo,
+                              style: basicColor(14.5, Colors.black87),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            SizedBox(height: 0.5.h),
+                            CustomText(
+                              text: nationalId,
+                              style: basicColor(14.5, Colors.black87),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ],
                         ),
-                        SizedBox(height: 0.5.h),
-
-                        //  SizedBox(height: 1.h,),
-                        CustomText(
-                          //  align: TextAlign.left,
-                          text: email,
-                          style: basicColor(14.5, Colors.black87),
-                        ),
-                        SizedBox(height: 0.5.h),
-                        CustomText(
-                          //  align: TextAlign.left,
-                          text: phoneNo,
-                          style: basicColor(14.5, Colors.black87),
-                        ),
-                        SizedBox(height: 0.5.h),
-                        CustomText(
-                          //  align: TextAlign.left,
-                          text: nationalId,
-                          style: basicColor(14.5, Colors.black87),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
 
-
                 Padding(
-                  padding:  EdgeInsets.only(top: 1.h),
-                  child: Container(
-                      height: 7.h,
-                      width: 27.w,
-                      child: Image.asset(AppImages.splashScreenLogo,fit: BoxFit.cover,)),
-                )
-
+                  padding: EdgeInsets.only(top: 1.h),
+                  child: SizedBox(
+                    height: 7.h,
+                    width: 27.w,
+                    child: Image.asset(AppImages.splashScreenLogo, fit: BoxFit.cover),
+                  ),
+                ),
               ],
             ),
+
             SizedBox(height: 2.h),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -1667,7 +1682,7 @@ class _MainLandingPageState extends State<MainLandingPage> {
                             ),
                             SizedBox(width: 6.w,),
                             CustomText(
-                              text:  "\$$dueAmount",
+                              text:  "${UserToken.currency}$dueAmount",
                               style: basicColorBold(14.5, AppColors.redColor),
                             ),
                           ],
@@ -2212,8 +2227,8 @@ class _MainLandingPageState extends State<MainLandingPage> {
   Widget _buildHealthFactor({
     required IconData icon,
     required String title,
-    required int totalWeight,
-    required int penalty,
+    required num totalWeight,
+    required num penalty,
     required double remaining,
     required Color color,
   }) {

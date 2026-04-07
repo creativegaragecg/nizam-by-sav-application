@@ -269,6 +269,7 @@ class _VisitorsState extends State<Visitors> {
     String unitNo = visitor.apartment?.apartmentNumber ?? "N/A";
 
     String dateOfVisit = visitor.dateOfVisit?.toString() ?? "N/A";
+
     dateOfVisit=formatDateTime(dateOfVisit);
     String dateOfExist = visitor.dateOfExit?.toString() ?? "N/A";
     dateOfExist=formatDateTime(dateOfExist);
@@ -276,7 +277,7 @@ class _VisitorsState extends State<Visitors> {
     inTime=inTime.to12HourFormat();
     String outTime = visitor.outTime ?? "N/A";
     outTime=outTime.to12HourFormat();
-    String status = visitor.status ?? "N/A";
+    //String status = visitor.status ?? "N/A";
     String floorName = visitor.apartment?.floors?.floorName ?? "N/A";
     String towerName = visitor.apartment?.towers?.towerName ?? "N/A";
     bool isExpanded = _isExpanded(id);
@@ -300,22 +301,7 @@ class _VisitorsState extends State<Visitors> {
           context,
           MaterialPageRoute(
             builder: (context) => VisitorDetails(
-              visitorName: visitorName,
-              ref: refNo,
-              unitNo: unitNo,
-              inTime: inTime,
-              outTime: outTime,
-              visitDate: dateOfVisit,
-              exitDate: dateOfExist,
-              visitPurpose: visitor.purposeOfVisit ?? "N/A",
-              visitType: visitor.visitorType?.name ?? "N/A",
-              visitAddress: visitor.address ?? "N/A",
-              contactNumber: mobileNo,
-              status: status,
-              floorName: floorName,
-              towerName: towerName,
-              cnic: cnic,
-              data: data,
+              visitorId: visitor.id.toString(),
             ),
           ),
         );
@@ -358,7 +344,7 @@ class _VisitorsState extends State<Visitors> {
                     Row(
                       children: [
                         /// status
-                        if (!isExpanded)
+                      /*  if (!isExpanded)
                           IntrinsicWidth(
                             child: Container(
                               padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 0.4.h),
@@ -369,34 +355,19 @@ class _VisitorsState extends State<Visitors> {
                               ),
                               child: Center(
                                 child: CustomText(
-                                  text: status.toTitleCase(),
+                                  text: "",
                                   style: basicColorBold(15, AppColors.white),
                                 ),
                               ),
                             ),
-                          ),
+                          ),*/
                         if (isExpanded)
                           viewDetail(context, (){
                             Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => VisitorDetails(
-                                  visitorName: visitorName,
-                                  ref: refNo,
-                                  unitNo: unitNo,
-                                  inTime: inTime,
-                                  outTime: outTime,
-                                  visitDate: dateOfVisit,
-                                  exitDate: dateOfExist,
-                                  visitPurpose: visitor.purposeOfVisit ?? "N/A",
-                                  visitType: visitor.visitorType?.name ?? "N/A",
-                                  visitAddress: visitor.address ?? "N/A",
-                                  contactNumber: mobileNo,
-                                  status: status,
-                                  floorName: floorName,
-                                  towerName: towerName,
-                                  cnic: cnic,
-                                  data: data,
+                                  visitorId: visitor.id.toString(),
                                 ),
                               ),
                             );
@@ -438,13 +409,13 @@ class _VisitorsState extends State<Visitors> {
                   children: [
                     unitDetailRow("Visitor Name:", visitorName.toTitleCase(), null),
                     unitDetailRow("Mobile No:", mobileNo, null),
-                    unitDetailRow("CNIC:", cnic, null),
+                    unitDetailRow("NIC:", cnic, null),
                     unitDetailRow("Unit No:", unitNo, null),
                     unitDetailRow("Date of Visit:", dateOfVisit, null),
                     unitDetailRow("Date of Exist:", dateOfExist, null),
                     unitDetailRow("In Time:", inTime, null),
                     unitDetailRow("Out Time:", outTime, null),
-                    SizedBox(height: 1.h),
+                   /* SizedBox(height: 1.h),
                     Align(
                       alignment: Alignment.bottomRight,
                       child: IntrinsicWidth(
@@ -462,7 +433,7 @@ class _VisitorsState extends State<Visitors> {
                           ),
                         ),
                       ),
-                    ),
+                    ),*/
 
                   ],
                 ),

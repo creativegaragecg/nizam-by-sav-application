@@ -23,6 +23,20 @@ class AuthRepository {
   }
 
 
+
+  Future<dynamic> saveFcm(dynamic data) async {
+    try {
+
+      dynamic response = await _apiService
+          .postPostApiResponse(AppEndPoints.fcmToken,  data,isAuth: false);
+      return response;
+    } catch (e) {
+      showToast("Fail to save FCM token");
+      debugPrint("Exception: ${e.toString()}");
+      rethrow;
+    }
+  }
+
   Future<dynamic> emergencyApi() async {
     try {
 

@@ -1,8 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savvyions/Utils/Constants/colors.dart';
+import 'package:savvyions/providers/auth_provider.dart';
 import 'package:savvyions/screens/menu.dart';
 import 'package:savvyions/screens/profile.dart';
+import '../../Data/token.dart';
+import '../../Services/Notification Services.dart';
+import '../../Services/Sos Service.dart';
+import '../../screens/Web Sos Screen.dart';
 import '../../screens/mainLandingPage.dart';
 
 class NavigationBarScreen extends StatefulWidget {
@@ -14,12 +22,83 @@ class NavigationBarScreen extends StatefulWidget {
 
 class _NavigationBarScreenState extends State<NavigationBarScreen> {
   int _selectedIndex = 1;
+  StreamSubscription? _sosSubscription; // ← add this
+
 
   static final List<Widget> _pages = [
     const Menu(),
     const MainLandingPage(),
     const ProfileScreen()
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _initSos(); // ← call after first frame so context is ready
+      // Check if app was opened by tapping a terminated-state notification
+      await NotificationService().checkInitialMessage();
+    });
+  }
+
+
+
+
+  void _initSos() async {
+    debugPrint('🔍 _initSos called'); // ← ADD
+
+    // ── Wait for token to be ready ──
+    await UserToken().loadUserToken();
+    final token = UserToken.token ?? '';
+    debugPrint('🔍 _initSos token: $token'); // ← ADD
+
+    if (token.isEmpty) {
+      debugPrint('🔍 _initSos: token empty, returning'); // ← ADD
+
+      return;
+    }
+
+      // ── Send FCM token to backend ──
+      final fcmToken = await NotificationService().getToken();
+      if (fcmToken != null) {
+
+        await _saveFcmToken(fcmToken);
+      }
+      // Refresh if it rotates
+      NotificationService().onTokenRefresh.listen(_saveFcmToken);
+
+      final sosService = SosService();
+
+      // ── Cancel any previous subscription first ──
+      await _sosSubscription?.cancel();
+
+      // ── Listen BEFORE starting polling so we never miss a fire ──
+// ── Listen BEFORE starting polling ──
+      _sosSubscription = sosService.listenToSos((sosData) {
+        if (!mounted) return;
+        if (ModalRoute.of(context)?.settings.name == '/sos') return;
+        Navigator.of(context).push(
+          MaterialPageRoute(
+            settings: const RouteSettings(name: '/sos'),
+            builder: (_) => WebSosScreen(sosData: sosData),
+            fullscreenDialog: true,
+          ),
+        );
+      });
+
+// ── Start polling AFTER listener ──
+      sosService.startPolling();
+
+
+  }
+
+  @override
+  void dispose() {
+    _sosSubscription?.cancel();
+    //SosService().stopPolling();
+    super.dispose();
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -91,5 +170,16 @@ class _NavigationBarScreenState extends State<NavigationBarScreen> {
         ),
       ),
     );
+  }
+
+  Future<void> _saveFcmToken(String fcmToken) async {
+    var body=
+    {
+      "token": fcmToken,
+      "device_type": "android"
+    };
+
+    await Provider.of<AuthViewModel>(context, listen: false).saveFCMToken(body, context);
+
   }
 }

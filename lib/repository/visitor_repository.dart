@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:savvyions/models/gatepassrequests.dart';
+import 'package:savvyions/models/visitor%20detail.dart';
 import 'package:savvyions/models/visitor.dart';
 import 'package:savvyions/models/visitorAppartment.dart';
 import 'package:savvyions/models/visitorTypes.dart';
@@ -37,6 +38,31 @@ class VisitorRepository {
     } catch (e) {
       showToast(e.toString());
       debugPrint("Error in getting visitor: $e");
+      rethrow;
+    }
+  }
+
+  Future<VisitorDetailModel> getVisitorDetails(String id) async {
+    try {
+      debugPrint("APP URL: ${AppEndPoints.visitor}/$id");
+      final response =
+      await _apiService.getGetApiResponse("${AppEndPoints.visitor}/$id");
+
+      // Handle direct user object response
+      if (response is Map<String, dynamic>) {
+        debugPrint("Visitor detail response: $response");
+        return VisitorDetailModel.fromJson(response);
+      } else if (response is String) {
+        // If it's a JSON string, decode it
+        final decoded = jsonDecode(response);
+        if (decoded is Map<String, dynamic>) {
+          return VisitorDetailModel.fromJson(decoded);
+        }
+      }
+      throw Exception("Response is not valid: $response");
+    } catch (e) {
+      showToast(e.toString());
+      debugPrint("Error in getting visitor details: $e");
       rethrow;
     }
   }

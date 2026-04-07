@@ -41,6 +41,8 @@ class _GatePassDetailsState extends State<GatePassDetails> {
   bool isDownloadingQR = false;
   bool isSharing = false;
   final GlobalKey _qrKey = GlobalKey();
+  bool isActivityLogs = false;
+
 
   @override
   void initState() {
@@ -591,6 +593,190 @@ class _GatePassDetailsState extends State<GatePassDetails> {
                       ),
                     ),
 
+                    SizedBox(height: 1.h),
+
+// ── Activity Logs Section ──
+                    Consumer<GatePassViewModel>(
+                      builder: (context, value, child) {
+                        final logs    = value.detailModel?.data?.activityLog?.logs ?? [];
+                        final summary = value.detailModel?.data?.activityLog?.summary;
+
+                        return CustomCards(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              GestureDetector(
+                                onTap: () => setState(() => isActivityLogs = !isActivityLogs),
+                                child: Container(
+                                  height: 6.h,
+                                  decoration: BoxDecoration(
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        AppColors.greenColor,
+                                        AppColors.greenColor.withOpacity(0.6),
+                                        Colors.white,
+                                      ],
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight,
+                                    ),
+                                  ),
+                                  padding: EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 3.w),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(Icons.history, color: Colors.white, size: 20),
+                                          SizedBox(width: 2.w),
+                                          CustomText(
+                                            text: "Activity Logs",
+                                            style: basicColorBold(16, Colors.white),
+                                          ),
+                                          if (logs.isNotEmpty) ...[
+                                            SizedBox(width: 2.w),
+                                            Container(
+                                              padding: EdgeInsets.symmetric(
+                                                  horizontal: 2.w, vertical: 0.3.h),
+                                              decoration: BoxDecoration(
+                                                color: Colors.white,
+                                                borderRadius: BorderRadius.circular(20),
+                                              ),
+                                              child: CustomText(
+                                                text: logs.length.toString(),
+                                                style: basicColorBold(11, AppColors.greenColor),
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                      AnimatedRotation(
+                                        turns: isActivityLogs ? 0.5 : 0,
+                                        duration: Duration(milliseconds: 300),
+                                        child: Icon(
+                                          Icons.keyboard_arrow_down_sharp,
+                                          color: AppColors.greenColor,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+
+                              if (isActivityLogs)
+                                Container(height: 0.2.h, width: 100.w,
+                                    color: AppColors.cardBorderColor),
+
+                              AnimatedSize(
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                child: isActivityLogs
+                                    ? Padding(
+                                  padding: EdgeInsets.symmetric(
+                                      vertical: 1.h, horizontal: 3.w),
+                                  child: Column(
+                                    children: [
+                                      // ── Summary chips ──
+                                      if (summary != null)
+                                        Container(
+                                          margin: EdgeInsets.only(bottom: 1.5.h),
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 1.h, horizontal: 2.w),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.greenColor.withOpacity(0.08),
+                                            borderRadius: BorderRadius.circular(8),
+                                          ),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                            MainAxisAlignment.spaceAround,
+                                            children: [
+                                              _summaryChip("Total Scans",
+                                                  summary.totalScans?.toString() ?? '0'),
+                                              _dividerChip(),
+                                              _summaryChip("In",
+                                                  summary.totalIn?.toString() ?? '0',
+                                                  color: AppColors.greenColor),
+                                              _dividerChip(),
+                                              _summaryChip("Out",
+                                                  summary.totalOut?.toString() ?? '0',
+                                                  color: Colors.red),
+                                            ],
+                                          ),
+                                        ),
+
+                                      // ── Latest In ──
+                                      if (summary?.latestIn != null)
+                                        Container(
+                                          margin: EdgeInsets.only(bottom: 1.5.h),
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 1.h, horizontal: 3.w),
+                                          decoration: BoxDecoration(
+                                            color: AppColors.greenColor.withOpacity(0.06),
+                                            borderRadius: BorderRadius.circular(8),
+                                            border: Border.all(
+                                                color:
+                                                AppColors.greenColor.withOpacity(0.2)),
+                                          ),
+                                          child: Row(
+                                            children: [
+                                              Icon(Icons.login,
+                                                  color: AppColors.greenColor, size: 16),
+                                              SizedBox(width: 2.w),
+                                              Expanded(
+                                                child: Column(
+                                                  crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                                  children: [
+                                                    CustomText(
+                                                      text: "Latest In",
+                                                      style: basicColorBold(
+                                                          14, AppColors.greenColor),
+                                                    ),
+                                                    CustomText(
+                                                      text: formatDateTime(summary!
+                                                          .latestIn!.time
+                                                          ?.toString()),
+                                                      style:
+                                                      basicColor(14, Colors.black54),
+                                                    ),
+                                                    if (summary.latestIn!.scannedBy !=
+                                                        null)
+                                                      CustomText(
+                                                        text:
+                                                        "By: ${summary.latestIn!.scannedBy}",
+                                                        style:
+                                                        basicColor(14, Colors.black54),
+                                                      ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                      // ── Log entries ──
+                                      if (logs.isEmpty)
+                                        Padding(
+                                          padding: EdgeInsets.all(2.h),
+                                          child: Center(
+                                            child: CustomText(
+                                              text: "No activity logs yet",
+                                              style: basicColor(14, Colors.grey),
+                                            ),
+                                          ),
+                                        )
+                                      else
+                                        ...logs.map((log) => _buildLogCard(log)).toList(),
+                                    ],
+                                  ),
+                                )
+                                    : const SizedBox.shrink(),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+
                     SizedBox(height: 2.h),
 
                     Consumer<GatePassViewModel>(
@@ -744,6 +930,100 @@ class _GatePassDetailsState extends State<GatePassDetails> {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _summaryChip(String label, String value, {Color? color}) {
+    return Column(
+      children: [
+        CustomText(
+          text: value,
+          style: basicColorBold(18, color ?? Colors.black87),
+        ),
+        SizedBox(height: 0.3.h),
+        CustomText(
+          text: label,
+          style: basicColor(14, Colors.black54),
+        ),
+      ],
+    );
+  }
+
+  Widget _dividerChip() {
+    return Container(height: 4.h, width: 0.5, color: Colors.grey.shade300);
+  }
+
+  Widget _buildLogCard(log) {
+    final bool isIn = (log.direction ?? '').toLowerCase() == 'in';
+    return Container(
+      margin: EdgeInsets.only(bottom: 1.h),
+      padding: EdgeInsets.symmetric(horizontal: 3.w, vertical: 1.2.h),
+      decoration: BoxDecoration(
+        color: isIn
+            ? AppColors.greenColor.withOpacity(0.06)
+            : Colors.red.withOpacity(0.06),
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: isIn
+              ? AppColors.greenColor.withOpacity(0.3)
+              : Colors.red.withOpacity(0.3),
+        ),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Container(
+            padding: EdgeInsets.all(1.5.w),
+            decoration: BoxDecoration(
+              color: isIn
+                  ? AppColors.greenColor.withOpacity(0.15)
+                  : Colors.red.withOpacity(0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              isIn ? Icons.login : Icons.logout,
+              color: isIn ? AppColors.greenColor : Colors.red,
+              size: 14,
+            ),
+          ),
+          SizedBox(width: 3.w),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CustomText(
+                      text: (log.direction ?? '-').toUpperCase(),
+                      style: basicColorBold(
+                          14, isIn ? AppColors.greenColor : Colors.red),
+                    ),
+                    CustomText(
+                      text: formatDateTime(log.activityTime?.toString()),
+                      style: basicColor(14, Colors.black54),
+                    ),
+                  ],
+                ),
+                if (log.scannedBy != null) ...[
+                  SizedBox(height: 0.3.h),
+                  CustomText(
+                    text: "Scanned by: ${log.scannedBy}",
+                    style: basicColor(14, Colors.black54),
+                  ),
+                ],
+                if (log.remarks != null && log.remarks!.isNotEmpty) ...[
+                  SizedBox(height: 0.3.h),
+                  CustomText(
+                    text: "Remarks: ${log.remarks}",
+                    style: basicColor(14, Colors.black54),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

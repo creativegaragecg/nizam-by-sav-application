@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savvyions/Data/token.dart';
@@ -31,11 +32,90 @@ import 'package:savvyions/swipeUpScreen.dart';
 import 'package:savvyions/welcomePage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'Services/Notification Services.dart';
+import 'Services/Sos Service.dart';
 import 'Utils/Constants/styles.dart';
 import 'Utils/Custom/custom_text.dart';
 import 'l10n/app_localizations.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
-void main() {
+
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+
+  // Must show notification manually when app is killed
+  if (message.data['type'] == 'sos') {
+    await _showBackgroundSosNotification(message);
+  }
+}
+
+Future<void> _showBackgroundSosNotification(RemoteMessage message) async {
+  final FlutterLocalNotificationsPlugin plugin =
+  FlutterLocalNotificationsPlugin();
+
+  // Must re-create channel in background isolate
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'sos_alerts',
+    'SOS Alerts',
+    description: 'Emergency SOS alerts',
+    importance: Importance.max,
+    playSound: true,
+    enableVibration: true,
+    enableLights: true,
+    ledColor: Color(0xFFFF0000),
+  );
+
+  await plugin
+      .resolvePlatformSpecificImplementation
+  <AndroidFlutterLocalNotificationsPlugin>()
+      ?.createNotificationChannel(channel);
+
+  await plugin.initialize(
+    const InitializationSettings(
+      android: AndroidInitializationSettings('@mipmap/launcher_icon'),
+      iOS: DarwinInitializationSettings(),
+    ),
+  );
+
+  final String title =
+      message.notification?.title ?? '⚠ SOS ALERT';
+  final String body =
+      message.notification?.body ?? 'Emergency triggered!';
+
+  await plugin.show(
+    message.hashCode,
+    title,
+    body,
+    const NotificationDetails(
+      android: AndroidNotificationDetails(
+        'sos_alerts',
+        'SOS Alerts',
+        importance: Importance.max,
+        priority: Priority.high,
+        playSound: true,
+        enableVibration: true,
+        color: Color(0xFFFF0000),
+        fullScreenIntent: true,
+      ),
+      iOS: DarwinNotificationDetails(
+        presentAlert: true,
+        presentSound: true,
+        interruptionLevel: InterruptionLevel.critical,
+      ),
+    ),
+  );
+}
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+  await NotificationService().initialize();
+  await SosService().initNotifications(); // ← ADD THIS LINE
+
   runApp(
       MultiProvider(
     providers: [
@@ -200,6 +280,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
     if (!mounted) return;
     UserToken().loadUserToken();
+    UserToken().loadUserCurrency();
 
 
 

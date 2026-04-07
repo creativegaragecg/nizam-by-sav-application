@@ -5,15 +5,10 @@ import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savvyions/Utils/Constants/utils.dart';
 import 'package:savvyions/Utils/Custom/customTextField.dart';
 import 'package:savvyions/Utils/Custom/custom_button.dart';
-import 'package:savvyions/Utils/Custom/navigationbar.dart';
-import 'package:savvyions/screens/AuthScreens/loginScreen.dart';
-import 'package:savvyions/screens/mainLandingPage.dart';
-
 import '../../Utils/Constants/colors.dart';
 import '../../Utils/Constants/images.dart';
 import '../../Utils/Constants/styles.dart';
 import '../../Utils/Custom/custom_text.dart';
-import '../../l10n/app_localizations.dart';
 import '../../providers/auth_provider.dart';
 
 class ChangePassword extends StatefulWidget {

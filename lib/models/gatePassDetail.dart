@@ -35,20 +35,164 @@ class GatePassRequestDetailModel {
 class Data {
   GatePassRequest? gatePassRequest;
   QrCode? qrCode;
+  ActivityLog? activityLog;
 
   Data({
     this.gatePassRequest,
     this.qrCode,
+    this.activityLog,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     gatePassRequest: json["gate_pass_request"] == null ? null : GatePassRequest.fromJson(json["gate_pass_request"]),
     qrCode: json["qr_code"] == null ? null : QrCode.fromJson(json["qr_code"]),
+    activityLog: json["activity_log"] == null ? null : ActivityLog.fromJson(json["activity_log"]),
   );
 
   Map<String, dynamic> toJson() => {
     "gate_pass_request": gatePassRequest?.toJson(),
     "qr_code": qrCode?.toJson(),
+    "activity_log": activityLog?.toJson(),
+  };
+}
+
+class ActivityLog {
+  Summary? summary;
+  List<Log>? logs;
+
+  ActivityLog({
+    this.summary,
+    this.logs,
+  });
+
+  factory ActivityLog.fromJson(Map<String, dynamic> json) => ActivityLog(
+    summary: json["summary"] == null ? null : Summary.fromJson(json["summary"]),
+    logs: json["logs"] == null ? [] : List<Log>.from(json["logs"]!.map((x) => Log.fromJson(x))),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "summary": summary?.toJson(),
+    "logs": logs == null ? [] : List<dynamic>.from(logs!.map((x) => x.toJson())),
+  };
+}
+
+class Log {
+  int? id;
+  String? direction;
+  DateTime? activityTime;
+  String? scannedBy;
+  String? societyId;
+  String? remarks;
+  ParsedData? parsedData;
+  DateTime? createdAt;
+
+  Log({
+    this.id,
+    this.direction,
+    this.activityTime,
+    this.scannedBy,
+    this.societyId,
+    this.remarks,
+    this.parsedData,
+    this.createdAt,
+  });
+
+  factory Log.fromJson(Map<String, dynamic> json) => Log(
+    id: json["id"],
+    direction: json["direction"],
+    activityTime: json["activity_time"] == null ? null : DateTime.parse(json["activity_time"]),
+    scannedBy: json["scanned_by"],
+    societyId: json["society_id"],
+    remarks: json["remarks"],
+    parsedData: json["parsed_data"] == null ? null : ParsedData.fromJson(json["parsed_data"]),
+    createdAt: json["created_at"] == null ? null : DateTime.parse(json["created_at"]),
+  );
+
+  Map<String, dynamic> toJson() => {
+    "id": id,
+    "direction": direction,
+    "activity_time": activityTime?.toIso8601String(),
+    "scanned_by": scannedBy,
+    "society_id": societyId,
+    "remarks": remarks,
+    "parsed_data": parsedData?.toJson(),
+    "created_at": createdAt?.toIso8601String(),
+  };
+}
+
+class ParsedData {
+  String? partyId;
+  String? partyType;
+
+  ParsedData({
+    this.partyId,
+    this.partyType,
+  });
+
+  factory ParsedData.fromJson(Map<String, dynamic> json) => ParsedData(
+    partyId: json["party_id"],
+    partyType: json["party_type"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "party_id": partyId,
+    "party_type": partyType,
+  };
+}
+
+class Summary {
+  int? totalScans;
+  int? totalIn;
+  int? totalOut;
+  LatestIn? latestIn;
+  dynamic latestOut;
+
+  Summary({
+    this.totalScans,
+    this.totalIn,
+    this.totalOut,
+    this.latestIn,
+    this.latestOut,
+  });
+
+  factory Summary.fromJson(Map<String, dynamic> json) => Summary(
+    totalScans: json["total_scans"],
+    totalIn: json["total_in"],
+    totalOut: json["total_out"],
+    latestIn: json["latest_in"] == null ? null : LatestIn.fromJson(json["latest_in"]),
+    latestOut: json["latest_out"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "total_scans": totalScans,
+    "total_in": totalIn,
+    "total_out": totalOut,
+    "latest_in": latestIn?.toJson(),
+    "latest_out": latestOut,
+  };
+}
+
+class LatestIn {
+  DateTime? time;
+  String? scannedBy;
+  String? remarks;
+
+  LatestIn({
+    this.time,
+    this.scannedBy,
+    this.remarks,
+  });
+
+  factory LatestIn.fromJson(Map<String, dynamic> json) => LatestIn(
+    time: json["time"] == null ? null : DateTime.parse(json["time"]),
+    scannedBy: json["scanned_by"],
+    remarks: json["remarks"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "time": time?.toIso8601String(),
+    "scanned_by": scannedBy,
+    "remarks": remarks,
   };
 }
 
@@ -62,10 +206,10 @@ class GatePassRequest {
   String? passNumber;
   dynamic passPurpose;
   DateTime? expectedOutTime;
-  dynamic actualOutTime;
-  dynamic returnedOn;
-  dynamic returnVerifiedBy;
-  dynamic approvedBy;
+  DateTime? actualOutTime;
+  DateTime? returnedOn;
+  int? returnVerifiedBy;
+  String? approvedBy;
   String? returnStatus;
   dynamic remarks;
   DateTime? createdAt;
@@ -73,7 +217,7 @@ class GatePassRequest {
   dynamic deletedAt;
   Tenant? tenant;
   Issuer? issuer;
-  dynamic returnVerifier;
+  Issuer? returnVerifier;
 
   GatePassRequest({
     this.id,
@@ -109,8 +253,8 @@ class GatePassRequest {
     passNumber: json["pass_number"],
     passPurpose: json["pass_purpose"],
     expectedOutTime: json["expected_out_time"] == null ? null : DateTime.parse(json["expected_out_time"]),
-    actualOutTime: json["actual_out_time"],
-    returnedOn: json["returned_on"],
+    actualOutTime: json["actual_out_time"] == null ? null : DateTime.parse(json["actual_out_time"]),
+    returnedOn: json["returned_on"] == null ? null : DateTime.parse(json["returned_on"]),
     returnVerifiedBy: json["return_verified_by"],
     approvedBy: json["approved_by"],
     returnStatus: json["return_status"],
@@ -120,7 +264,7 @@ class GatePassRequest {
     deletedAt: json["deleted_at"],
     tenant: json["tenant"] == null ? null : Tenant.fromJson(json["tenant"]),
     issuer: json["issuer"] == null ? null : Issuer.fromJson(json["issuer"]),
-    returnVerifier: json["return_verifier"],
+    returnVerifier: json["return_verifier"] == null ? null : Issuer.fromJson(json["return_verifier"]),
   );
 
   Map<String, dynamic> toJson() => {
@@ -133,8 +277,8 @@ class GatePassRequest {
     "pass_number": passNumber,
     "pass_purpose": passPurpose,
     "expected_out_time": expectedOutTime?.toIso8601String(),
-    "actual_out_time": actualOutTime,
-    "returned_on": returnedOn,
+    "actual_out_time": actualOutTime?.toIso8601String(),
+    "returned_on": returnedOn?.toIso8601String(),
     "return_verified_by": returnVerifiedBy,
     "approved_by": approvedBy,
     "return_status": returnStatus,
@@ -144,7 +288,7 @@ class GatePassRequest {
     "deleted_at": deletedAt,
     "tenant": tenant?.toJson(),
     "issuer": issuer?.toJson(),
-    "return_verifier": returnVerifier,
+    "return_verifier": returnVerifier?.toJson(),
   };
 }
 

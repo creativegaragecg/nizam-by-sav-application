@@ -8,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
+import '../../Data/token.dart';
 import '../../Utils/Constants/colors.dart';
 import '../../Utils/Constants/styles.dart';
 import '../../Utils/Constants/utils.dart';
@@ -270,8 +271,8 @@ class _MyLeaseStatementState extends State<MyLeaseStatement> {
                       children: [
                         _buildPDFDataCell(billDate),
                         _buildPDFDataCell(billType),
-                        _buildPDFDataCell(rentAmount),
-                        _buildPDFDataCell(paidAmount),
+                        _buildPDFDataCell("${UserToken.currency}$rentAmount"),
+                        _buildPDFDataCell("${UserToken.currency}$paidAmount"),
                         _buildPDFDataCell(paymentDate),
                         _buildPDFStatusCell(status),
                       ],
@@ -551,8 +552,8 @@ class _MyLeaseStatementState extends State<MyLeaseStatement> {
                                 children: [
                                   buildDataCell(dueDate, 1.5),
                                   buildDataCell(billType, 1.5),
-                                  buildDataCell(rentAmount, 1),
-                                  buildDataCell(paidAmount, 1),
+                                  buildDataCell("${UserToken.currency}$rentAmount", 1),
+                                  buildDataCell("${UserToken.currency}$paidAmount", 1),
                                   buildDataCell(paymentDate, 1.2),
                                   Expanded(
                                     flex: 10,

@@ -3,6 +3,8 @@ plugins {
     id("kotlin-android")
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
+    id("com.google.gms.google-services") // ✅ replaces classpath approach
+
 }
 
 def keystoreProperties = new Properties()
@@ -18,12 +20,14 @@ android {
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true   // ✅ ADD THIS
+
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     defaultConfig {
@@ -55,7 +59,13 @@ android {
 
     buildTypes {
         release {
+            /*minifyEnabled false  // try setting this to false first
+            shrinkResources false*/
             signingConfig = signingConfigs.release
+            minifyEnabled true
+            shrinkResources false   // ← keep false, only minify
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
         debug {
             signingConfig = signingConfigs.debug
@@ -66,3 +76,8 @@ android {
 flutter {
     source = "../.."
 }
+
+dependencies {
+    implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
+
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.4'}

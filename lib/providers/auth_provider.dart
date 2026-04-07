@@ -141,6 +141,7 @@ import 'package:savvyions/screens/AuthScreens/loginScreen.dart';
 import 'package:savvyions/screens/mainLandingPage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Data/token.dart';
+import '../Data/app_exceptions.dart';
 import '../Repository/auth_repository.dart';
 import '../Utils/Constants/urls.dart';
 import '../Utils/Constants/utils.dart';
@@ -429,6 +430,45 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
+
+  Future<void> saveFCMToken(dynamic data, BuildContext context) async {
+    try {
+      setLoading(true);
+      final response = await _myRepo.saveFcm(data);
+
+      debugPrint('Create Response: $response');
+
+      final Map<String, dynamic> decoded = jsonDecode(response);
+
+
+      if (decoded['message'] == 'Token saved successfully') {
+        String msg = decoded['message'] ?? 'Token saved';
+        debugPrint(msg);
+       // showToast(msg);
+      } else {
+        String errorMsg = decoded['message'] ?? 'Failed to save token';
+        debugPrint("errorMsg: $errorMsg");
+        showToast(errorMsg);
+      }
+    } on BadRequestException catch (e) {
+      // Handle 422 and 400 errors - THIS WILL NOW SHOW THE CORRECT MESSAGE
+      debugPrint("Booking validation error: ${e.toString()}");
+      showToast(e.toString());
+    } on UnauthorisedException catch (e) {
+      debugPrint("Authorization error: ${e}");
+      showToast(e.toString() ?? "Session expired. Please login again.");
+    } on FetchDataException catch (e) {
+      debugPrint("Network error: ${e}");
+      showToast(e.toString() ?? "Network error occurred");
+    } catch (e) {
+      debugPrint("Unexpected error: ${e.toString()}");
+      showToast("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
 /*
   Future<void> emergencyAcknowledge() async {
     try {
@@ -458,5 +498,7 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 */
+
+
 
 }

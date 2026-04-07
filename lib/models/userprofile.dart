@@ -30,17 +30,45 @@ class UserProfileModel {
 
 class Data {
   User? user;
+  Currency? currency;
 
   Data({
     this.user,
+    this.currency,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     user: json["user"] == null ? null : User.fromJson(json["user"]),
+    currency: json["currency"] == null ? null : Currency.fromJson(json["currency"]),
   );
 
   Map<String, dynamic> toJson() => {
     "user": user?.toJson(),
+    "currency": currency?.toJson(),
+  };
+}
+
+class Currency {
+  String? symbol;
+  String? code;
+  String? position;
+
+  Currency({
+    this.symbol,
+    this.code,
+    this.position,
+  });
+
+  factory Currency.fromJson(Map<String, dynamic> json) => Currency(
+    symbol: json["symbol"],
+    code: json["code"],
+    position: json["position"],
+  );
+
+  Map<String, dynamic> toJson() => {
+    "symbol": symbol,
+    "code": code,
+    "position": position,
   };
 }
 

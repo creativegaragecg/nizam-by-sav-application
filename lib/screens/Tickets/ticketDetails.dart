@@ -368,7 +368,7 @@ class _TicketDetailsState extends State<TicketDetails> {
                                           color: AppColors.greenColor, size: 18),
                                       SizedBox(width: 2.w),
                                       CustomText(
-                                        text: "Ticket #$ticketNumber",
+                                        text: "Tk-$ticketNumber",
                                         style: basicColorBold(16, Colors.black),
                                       ),
                                     ],

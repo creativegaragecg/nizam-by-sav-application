@@ -84,5 +84,6 @@ class AppEndPoints {
   static String get initiatePaymentMethods => '${baseUrl}rent/initiate-payment';
   static String get offlinePayments => '${baseUrl}rent/offline-payment';
 
-
+  static String get SosUrl => '${baseUrl}emergency-sos';
+  static String get fcmToken => '${baseUrl}fcm/token';
 }

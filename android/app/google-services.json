@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "677379524914",
+    "project_id": "savvyions",
+    "storage_bucket": "savvyions.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:677379524914:android:f4fd1f52103fd21defaf2b",
+        "android_client_info": {
+          "package_name": "com.savvyions.savvyions"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBepkCKP6qC_hJSryuuN4MaxO4WU9_faA8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

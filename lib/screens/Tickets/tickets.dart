@@ -389,7 +389,7 @@ class _TicketsState extends State<Tickets> {
                         Icon(Icons.sticky_note_2, color: Colors.white, size: 22),
                         SizedBox(width: 2.w),
                         CustomText(
-                          text: ticketNumber,
+                          text: "Tk-$ticketNumber",
                           style: basicColorBold(16, Colors.white),
                         ),
                       ],

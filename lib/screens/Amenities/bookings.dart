@@ -3,17 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savvyions/models/myBookings.dart';
 import 'package:savvyions/providers/amenities_provider.dart';
-import 'package:savvyions/screens/Amenities/updateAmenity.dart';
 import '../../Utils/Constants/colors.dart';
-import '../../Utils/Constants/images.dart';
 import '../../Utils/Constants/styles.dart';
 import '../../Utils/Constants/utils.dart';
 import '../../Utils/Custom/customBgScreen.dart';
 import '../../Utils/Custom/customCards.dart';
 import '../../Utils/Custom/custom_text.dart';
-import '../../models/amenities.dart';
-import '../../models/mylease.dart';
-import '../../providers/lease_provider.dart';
 
 class Bookings extends StatefulWidget {
   const Bookings({super.key});
@@ -106,12 +101,11 @@ class _BookingsState extends State<Bookings> {
   }
   Widget bookingDetails(Booking data) {
     String amenityName=data.amenityName??"N/A";
-    String bookingDate=data.bookingDate.toString()??"N/A";
-
+    String bookingDate=data.bookingDate?.toString()??"N/A";
     bookingDate=dateConverted(bookingDate);
-    String bookingTime=data.bookingTime.toString()??"N/A";
+    String bookingTime=data.bookingTime?.toString()??"N/A";
     bookingTime=bookingTime.to12HourFormat();
-    String persons=data.persons.toString()??"";
+    String persons=data.persons?.toString()??"";
     String bookingType=data.bookingType??"";
 
 

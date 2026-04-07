@@ -1,17 +1,16 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savvyions/providers/bills_provider.dart';
 import 'package:savvyions/screens/Bills/payment%20methods.dart';
+import '../../Data/token.dart';
 import '../../Utils/Constants/colors.dart';
 import '../../Utils/Constants/styles.dart';
 import '../../Utils/Constants/utils.dart';
 import '../../Utils/Custom/customBgScreen.dart';
 import '../../Utils/Custom/custom_text.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
 import '../../models/payment methods.dart';
 
 class Bills extends StatefulWidget {
@@ -37,7 +36,6 @@ class _BillsState extends State<Bills> {
   Future<void> _handlePaymentClick(BillsViewModel bills, dynamic billId) async {
     // Store the navigator and scaffold messenger BEFORE any async operations
     final navigatorState = Navigator.of(context);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
 
     var data = {
       "rent_id": billId
@@ -77,7 +75,7 @@ class _BillsState extends State<Bills> {
               context,
               selectedMethod,
               billId ?? 0,
-              billAmount,
+              "${UserToken.currency}$billAmount",
               );
               } else {
                 // Handle online payment
@@ -296,8 +294,8 @@ class _BillsState extends State<Bills> {
                             String dueDate = bill.billDueDate?.toString().split(' ')[0] ?? "N/A";
                             // Use billType.name from nested object
                             String billType = bill.type ?? "N/A";
-                            String dueAmount = bill.dueAmount ?? "N/A";
-                            String paidAmount = bill.paidAmount ?? "N/A";
+                            String dueAmount = "${UserToken.currency}${bill.dueAmount}" ?? "N/A";
+                            String paidAmount = "${UserToken.currency}${bill.paidAmount}" ?? "N/A";
                             String status = bill.status ?? "N/A";
 
                             Color statusColor = status.toLowerCase() == "paid"

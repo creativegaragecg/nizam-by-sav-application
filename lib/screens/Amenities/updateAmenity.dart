@@ -3,12 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savvyions/Utils/Custom/custom_button.dart';
 import 'package:savvyions/providers/amenities_provider.dart';
-
 import '../../Utils/Constants/colors.dart';
 import '../../Utils/Constants/styles.dart';
 import '../../Utils/Constants/utils.dart';
 import '../../Utils/Custom/customBgScreen.dart';
-
 import '../../Utils/Custom/custom_text.dart';
 import '../../models/myBookings.dart';
 

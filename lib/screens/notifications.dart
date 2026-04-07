@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:responsive_sizer/responsive_sizer.dart';
 import 'package:savvyions/Utils/Constants/utils.dart';
 import 'package:savvyions/models/notifications.dart';
-
 import '../../Utils/Constants/colors.dart';
 import '../../Utils/Constants/styles.dart';
 import '../../Utils/Custom/customBgScreen.dart';
@@ -272,31 +271,38 @@ class _NotificationsState extends State<Notifications> with SingleTickerProvider
   Widget notificationCard(ReadNotification notification, bool isUnread) {
     String message = notification.data?.message ?? "N/A";
     String userName = notification.data?.userName ?? "System";
-    String tenantName = notification.data?.tenantName ?? "";
     String type = notification.type ?? "notification";
     DateTime? createdAt = notification.createdAt;
     String timeAgo = createdAt != null ? _getTimeAgo(createdAt) : "Unknown";
 
+    // ✅ Detect system notification
+    bool isSystem = userName.trim().toLowerCase() == "system" ||
+        (notification.data?.userName == null || notification.data!.userName!.isEmpty);
+
+    // ✅ Colors based on type
+    Color primaryColor = isSystem ? Color(0xFF6366F1) : AppColors.greenColor;
+    Color bgColor = isSystem
+        ? Color(0xFF6366F1).withOpacity(0.05)
+        : (isUnread ? AppColors.greenColor.withOpacity(0.05) : Colors.white);
+
     IconData getNotificationIcon(String type) {
-      if (type.toLowerCase().contains('payment')) {
-        return Icons.payment;
-      } else if (type.toLowerCase().contains('maintenance')) {
-        return Icons.build;
-      } else if (type.toLowerCase().contains('event')) {
-        return Icons.event;
-      } else if (type.toLowerCase().contains('message')) {
-        return Icons.message;
-      } else {
-        return Icons.notifications;
-      }
+      if (type.toLowerCase().contains('payment')) return Icons.payment;
+      if (type.toLowerCase().contains('maintenance')) return Icons.build;
+      if (type.toLowerCase().contains('event')) return Icons.event;
+      if (type.toLowerCase().contains('message')) return Icons.message;
+      if (type.toLowerCase().contains('system')) return Icons.settings_suggest;
+      return Icons.notifications;
     }
 
     return CustomCards(
       child: Container(
         padding: EdgeInsets.symmetric(vertical: 1.5.h, horizontal: 3.w),
         decoration: BoxDecoration(
-          color: isUnread ? AppColors.greenColor.withOpacity(0.05) : Colors.white,
+          color: bgColor,
           borderRadius: BorderRadius.circular(12),
+          border: isSystem
+              ? Border.all(color: Color(0xFF6366F1).withOpacity(0.2), width: 1)
+              : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -304,39 +310,61 @@ class _NotificationsState extends State<Notifications> with SingleTickerProvider
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                // Notification Icon
+                // Icon
                 Container(
                   padding: EdgeInsets.all(2.w),
                   decoration: BoxDecoration(
-                    color: AppColors.greenColor.withOpacity(0.15),
+                    color: primaryColor.withOpacity(0.15),
                     borderRadius: BorderRadius.circular(10),
                   ),
                   child: Icon(
                     getNotificationIcon(type),
-                    color: AppColors.greenColor,
+                    color: primaryColor,
                     size: 22,
                   ),
                 ),
                 SizedBox(width: 3.w),
-                // Notification Content
+                // Content
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Row(
                         children: [
-                          Expanded(
-                            child: CustomText(
-                              text: userName.toTitleCase(),
-                              style: basicColorBold(15, Colors.black87),
+                          // ✅ System badge or user name
+                          if (isSystem)
+                            Container(
+                              padding: EdgeInsets.symmetric(horizontal: 2.w, vertical: 0.3.h),
+                              decoration: BoxDecoration(
+                                color: Color(0xFF6366F1).withOpacity(0.12),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Icon(Icons.smart_toy_outlined, size: 13, color: Color(0xFF6366F1)),
+                                  SizedBox(width: 1.w),
+                                  CustomText(
+                                    text: "System",
+                                    style: basicColorBold(13, Color(0xFF6366F1)),
+                                  ),
+                                ],
+                              ),
+                            )
+                          else
+                            Expanded(
+                              child: CustomText(
+                                text: userName.toTitleCase(),
+                                style: basicColorBold(15, Colors.black87),
+                              ),
                             ),
-                          ),
                           if (isUnread)
                             Container(
                               width: 10,
                               height: 10,
+                              margin: EdgeInsets.only(left: 2.w),
                               decoration: BoxDecoration(
-                                color: AppColors.greenColor,
+                                color: primaryColor,
                                 shape: BoxShape.circle,
                               ),
                             ),
@@ -347,21 +375,10 @@ class _NotificationsState extends State<Notifications> with SingleTickerProvider
                         text: message,
                         style: basicColor(14.5, Colors.black),
                       ),
-                     /* if (tenantName.isNotEmpty) ...[
-                        SizedBox(height: 0.5.h),
-                        CustomText(
-                          text: "Tenant: ${tenantName.toTitleCase()}",
-                          style: basicColor(13, Colors.black45),
-                        ),
-                      ],*/
                       SizedBox(height: 1.h),
                       Row(
                         children: [
-                          Icon(
-                            Icons.access_time,
-                            size: 14,
-                            color: Colors.black,
-                          ),
+                          Icon(Icons.access_time, size: 14, color: Colors.black),
                           SizedBox(width: 1.w),
                           CustomText(
                             text: timeAgo,
@@ -370,25 +387,19 @@ class _NotificationsState extends State<Notifications> with SingleTickerProvider
                           Spacer(),
                           if (isUnread)
                             GestureDetector(
-                              onTap: () {
-                                markAsRead(notification.id ?? "");
-                              },
+                              onTap: () => markAsRead(notification.id ?? ""),
                               child: Container(
                                 padding: EdgeInsets.symmetric(
                                   horizontal: 3.w,
                                   vertical: 0.5.h,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: AppColors.greenColor,
+                                  color: primaryColor,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Row(
                                   children: [
-                                    Icon(
-                                      Icons.done,
-                                      color: Colors.white,
-                                      size: 14,
-                                    ),
+                                    Icon(Icons.done, color: Colors.white, size: 14),
                                     SizedBox(width: 1.w),
                                     CustomText(
                                       text: "Mark as Read",
@@ -410,6 +421,7 @@ class _NotificationsState extends State<Notifications> with SingleTickerProvider
       ),
     );
   }
+
 
   String _getTimeAgo(DateTime dateTime) {
     final now = DateTime.now();
