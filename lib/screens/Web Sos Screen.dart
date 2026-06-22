@@ -68,9 +68,9 @@ class _WebSosScreenState extends State<WebSosScreen>
         ? widget.sosData.notifications!.first.data
         : null;
 
-    final reason  = notifData?.reason?.trim() ?? 'Emergency';
+    final reason  = notifData?.type.toString() ?? 'Emergency';
     final society = notifData?.societyName ?? '';
-    final by      = notifData?.triggeredBy ?? '-';
+    final by      = '-';
     final time    = widget.sosData.createdAt != null
         ? formatDateTime(widget.sosData.createdAt.toString())
         : '-';

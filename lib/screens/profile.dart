@@ -118,14 +118,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
                               CircleAvatar(
                                 backgroundColor: Colors.lightBlueAccent,
-                                radius: 20,
+                                radius: 20.sp,
                                 child: userPic.isNotEmpty && userPic != "N/A"
                                     ? ClipOval(
                                   child: Image.network(
                                     userPic,
                                     fit: BoxFit.cover,
-                                    width: 60,
-                                    height: 60,
+                                    width: 60.w,
+                                    height: 60.h,
                                     errorBuilder: (context, error, stackTrace) {
                                       return Image.asset(
                                         AppImages.dummyImage,

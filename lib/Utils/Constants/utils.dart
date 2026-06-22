@@ -357,7 +357,7 @@ Widget customHeaderLine(BuildContext context){
 Widget viewDetail(BuildContext context,VoidCallback onPressed){
   return  GestureDetector(
       onTap:onPressed,
-      child: Icon(Icons.remove_red_eye_outlined,color: AppColors.greenColor,size: 19,));
+      child: Icon(Icons.remove_red_eye_outlined,color: AppColors.greenColor,size: 18.sp,));
 
 }
 

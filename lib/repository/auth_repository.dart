@@ -32,7 +32,7 @@ class AuthRepository {
       return response;
     } catch (e) {
       showToast("Fail to save FCM token");
-      debugPrint("Exception: ${e.toString()}");
+      debugPrint("Exception in fcm: ${e.toString()}");
       rethrow;
     }
   }

@@ -44,12 +44,38 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 @pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
+  // FCM already shows the notification automatically when app is killed
+  // (because the payload has a notification block with title/body).
+  // Calling _showBackgroundSosNotification() here creates a duplicate.
+  debugPrint("Background FCM received: ${message.data}");
+}
+
+/*
+@pragma('vm:entry-point')
+Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp();
+  // 1. Convert the whole message to a Map to see the FULL structure
+  print("--- FULL FCM MESSAGE START ---");
+  print(message.toMap().toString());
+  print("--- FULL FCM MESSAGE END ---");
+
+  // 2. Specifically look at the notification part (this is where Campaigns live)
+  if (message.notification != null) {
+    print("Notification Title: ${message.notification?.title}");
+    print("Notification Body: ${message.notification?.body}");
+  }
+
+  // 3. Look at the data part (this is where your SOS logic lives)
+  print("Data Payload: ${message.data}");
+
+  print("Background Message Received: ${message.data}");
 
   // Must show notification manually when app is killed
-  if (message.data['type'] == 'sos') {
+
     await _showBackgroundSosNotification(message);
-  }
+
 }
+*/
 
 Future<void> _showBackgroundSosNotification(RemoteMessage message) async {
   final FlutterLocalNotificationsPlugin plugin =
@@ -314,6 +340,17 @@ class _SplashScreenState extends State<SplashScreen> {
             (route) => false,
       );
     }
+     else if(authViewModel.accounts.isEmpty && !isWelcomePages) {
+
+       // Optional: Refresh any user-specific data here if needed
+       // e.g., Provider.of<UserProfileViewModel>(context, listen: false).fetchProfile();
+
+       Navigator.pushAndRemoveUntil(
+         context,
+         MaterialPageRoute(builder: (context) => const WelcomeScreen()),
+             (route) => false,
+       );
+     }
   }
 
   @override

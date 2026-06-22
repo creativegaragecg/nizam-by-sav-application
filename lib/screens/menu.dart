@@ -8,6 +8,8 @@ import 'package:savvyions/providers/auth_provider.dart';
 import 'package:savvyions/screens/AuthScreens/loginScreen.dart';
 import 'package:savvyions/screens/qrScreen.dart';
 import 'package:savvyions/swipeUpScreen.dart';
+import 'package:savvyions/welcomePage.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../Utils/Constants/utils.dart';
 import '../providers/user_provider.dart';
@@ -67,7 +69,7 @@ class _MenuState extends State<Menu> {
                     return ListTile(
 
                       leading: CircleAvatar(
-                        radius: 16,
+                        radius: 19.sp,
                         backgroundColor: isCurrent ? AppColors.greenColor : Colors.grey,
                         child: Text(
                           account.userName.substring(0, 1).toUpperCase(),
@@ -78,15 +80,17 @@ class _MenuState extends State<Menu> {
                         account.userName,
                         style: TextStyle(
                           fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal,
-                          fontFamily: "Ubuntu"
+                          fontFamily: "Ubuntu",
+                          fontSize: 18.sp
                         ),
                       ),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text(account.email,style: TextStyle(fontFamily: "Ubuntu"),),
+                          CustomText(text:account.email,style: TextStyle(fontFamily: "Ubuntu",  fontSize: 16.sp),),
                           SizedBox(height: 0.2.h,),
-                          CustomText(text: account.societyName, style: basicColor(15.5, AppColors.greenColor)),
+
+                          CustomText(text: account.societyName, style: basicColor(17.5, AppColors.greenColor)),
                           SizedBox(height: 1.h,),
 
                         ],
@@ -132,15 +136,14 @@ class _MenuState extends State<Menu> {
                       await value.logoutCurrentAccount();
                       showToast("Logged out");
 
-                      // If no accounts left → go to login
+
+                      // ✅ Check AFTER await completes
                       if (value.accounts.isEmpty) {
                         Navigator.pushAndRemoveUntil(
                           context,
-                          MaterialPageRoute(builder: (_) =>  SwipeUpScreen()),
+                          MaterialPageRoute(builder: (_) => WelcomeScreen()),
                               (route) => false,
                         );
-                      } else {
-                        ///
                       }
                     },
                   ),

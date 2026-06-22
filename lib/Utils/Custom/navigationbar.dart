@@ -126,19 +126,19 @@ class _NavigationBarScreenState extends State<NavigationBarScreen> {
             children: [
               _buildNavItem(
                 icon: Icons.menu,
-                size: 27,
+                size: 20.sp,
                 isSelected: _selectedIndex == 0,
                 onTap: () => setState(() => _selectedIndex = 0),
               ),
               _buildNavItem(
                 icon: Icons.home_outlined,
-                size: 27,
+                size: 20.sp,
                 isSelected: _selectedIndex == 1,
                 onTap: () => setState(() => _selectedIndex = 1),
               ),
               _buildNavItem(
                 icon: Icons.person_outline,
-                size: 27,
+                size: 20.sp,
                 isSelected: _selectedIndex == 2,
                 onTap: () => setState(() => _selectedIndex = 2),
               ),

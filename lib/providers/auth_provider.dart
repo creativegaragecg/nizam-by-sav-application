@@ -364,13 +364,15 @@ class AuthViewModel extends ChangeNotifier {
     final accountsJson =
     _accounts.map((acc) => jsonEncode(acc.toJson())).toList();
     prefs.setStringList('accounts', accountsJson);
-
+print("Accounts:$accounts");
     // Switch to another if exists
     if (_accounts.isNotEmpty) {
+
       await switchToAccount(_accounts.last.email);
     } else {
       prefs.remove('current_email');
       _currentAccount = null;
+      prefs.setBool('welcomePages',false);
       userToken.setUserToken(token: null,url: null);
     }
 

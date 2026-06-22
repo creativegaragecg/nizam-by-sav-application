@@ -139,6 +139,49 @@ class SosService {
   Future<void> _showSosNotification(Datum sos) async {
     if (!_notifInitialized) await initNotifications();
 
+    final notif = sos.notifications?.isNotEmpty == true
+        ? sos.notifications!.first
+        : null;
+
+    final data = notif?.notification;
+
+    final String title = data?.title ?? '⚠ SOS Alert';
+    final String body = data?.body ?? 'Emergency';
+    final String society = notif?.data?.societyName ?? 'SOS Alert';
+
+    final int notifId = int.tryParse(sos.sosId ?? '0') ??
+        DateTime.now().millisecondsSinceEpoch;
+
+    await _notifPlugin.show(
+      notifId,
+      title,
+      body,
+      const NotificationDetails(
+        android: AndroidNotificationDetails(
+          'sos_alerts',
+          'SOS Alerts',
+          importance: Importance.max,
+          priority: Priority.high,
+          playSound: true,
+          enableVibration: true,
+          color: Color(0xFFFF0000),
+          fullScreenIntent: true,
+          ongoing: true,
+          autoCancel: false,
+        ),
+        iOS: DarwinNotificationDetails(
+          presentAlert: true,
+          presentSound: true,
+          interruptionLevel: InterruptionLevel.critical,
+        ),
+      ),
+    );
+  }
+
+/*
+  Future<void> _showSosNotification(Datum sos) async {
+    if (!_notifInitialized) await initNotifications();
+
     final notifData = sos.notifications?.isNotEmpty == true
         ? sos.notifications!.first.data
         : null;
@@ -180,6 +223,7 @@ class SosService {
       ),
     );
   }
+*/
 
   void emitSos(Datum sosData) {
     final idStr = sosData.sosId.toString();

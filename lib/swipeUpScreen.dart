@@ -32,7 +32,6 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
   void initState() {
     super.initState();
 
-    // Swipe animation for the arrow
     _swipeAnimationController = AnimationController(
       duration: const Duration(milliseconds: 1500),
       vsync: this,
@@ -45,7 +44,6 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
       ),
     );
 
-    // QR code pulse animation
     _qrPulseController = AnimationController(
       duration: const Duration(milliseconds: 2000),
       vsync: this,
@@ -58,7 +56,6 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
       ),
     );
 
-    // Slide up animation for screen transition
     _slideUpController = AnimationController(
       duration: const Duration(milliseconds: 600),
       vsync: this,
@@ -81,7 +78,6 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
       ),
     );
 
-    // Info fade animation
     _infoFadeController = AnimationController(
       duration: const Duration(milliseconds: 400),
       vsync: this,
@@ -106,10 +102,7 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
 
   void _navigateToQRScanner() async {
     if (_isNavigating) return;
-
-    setState(() {
-      _isNavigating = true;
-    });
+    setState(() => _isNavigating = true);
 
     _swipeAnimationController.stop();
     _qrPulseController.stop();
@@ -124,17 +117,13 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
           transitionDuration: Duration.zero,
         ),
       );
-
       _resetAnimations();
     }
   }
 
   void _resetAnimations() {
     if (mounted) {
-      setState(() {
-        _isNavigating = false;
-      });
-
+      setState(() => _isNavigating = false);
       _slideUpController.reset();
       _swipeAnimationController.repeat(reverse: true);
       _qrPulseController.repeat(reverse: true);
@@ -142,9 +131,7 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
   }
 
   void _toggleInfo() {
-    setState(() {
-      _showInfo = !_showInfo;
-    });
+    setState(() => _showInfo = !_showInfo);
     if (_showInfo) {
       _infoFadeController.forward();
     } else {
@@ -177,174 +164,233 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
                 child: SafeArea(
                   child: Stack(
                     children: [
-                      Column(
-                        children: [
-                          SizedBox(height: 3.h),
+                      // ── Main content ──────────────────────────────────
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          return SingleChildScrollView(
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                minHeight: constraints.maxHeight,
+                              ),
+                              child: IntrinsicHeight(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    SizedBox(height: 3.h),
 
-                          // Header with logo and info button
-                          Center(
-                            child: Container(
-                              height: 9.h,
-                              child: Image.asset(AppImages.splashScreenLogo),
-                            ),
-                          ),
+                                    // Logo
+                                    Center(
+                                      child: SizedBox(
+                                        height: 9.h,
+                                        child: Image.asset(
+                                            AppImages.splashScreenLogo),
+                                      ),
+                                    ),
 
-                          SizedBox(height: 5.h),
+                                    SizedBox(height: 5.h),
 
-                          Expanded(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                // Animated QR Code Icon
-                                GestureDetector(
-                                  onTap: _navigateToQRScanner,
-                                  child: AnimatedBuilder(
-                                    animation: _qrPulseAnimation,
-                                    builder: (context, child) {
-                                      return Transform.scale(
-                                        scale: _qrPulseAnimation.value,
-                                        child: Stack(
-                                          alignment: Alignment.center,
-                                          children: [
-                                            // Outer pulse rings
-                                            ...List.generate(3, (index) {
-                                              return Container(
-                                                width: (45 + index * 10).w,
-                                                height: (45 + index * 10).w,
-                                                decoration: BoxDecoration(
-                                                  shape: BoxShape.circle,
-                                                  border: Border.all(
+                                    // Center content expands to fill remaining space
+                                    Expanded(
+                                      child: Column(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.center,
+                                        children: [
+                                          // ── Animated QR Icon ──────────
+                                          GestureDetector(
+                                            onTap: _navigateToQRScanner,
+                                            child: AnimatedBuilder(
+                                              animation: _qrPulseAnimation,
+                                              builder: (context, child) {
+                                                return Transform.scale(
+                                                  scale:
+                                                  _qrPulseAnimation.value,
+                                                  child: Stack(
+                                                    alignment: Alignment.center,
+                                                    children: [
+                                                      // Pulse rings
+                                                      ...List.generate(3,
+                                                              (index) {
+                                                            return Container(
+                                                              width: (45 +
+                                                                  index * 10)
+                                                                  .w,
+                                                              height: (45 +
+                                                                  index * 10)
+                                                                  .w,
+                                                              decoration:
+                                                              BoxDecoration(
+                                                                shape:
+                                                                BoxShape.circle,
+                                                                border: Border.all(
+                                                                  color: AppColors
+                                                                      .greenColor
+                                                                      .withOpacity(
+                                                                      0.3 -
+                                                                          index *
+                                                                              0.1),
+                                                                  width: 2,
+                                                                ),
+                                                              ),
+                                                            );
+                                                          }),
+
+                                                      // QR container
+                                                      Container(
+                                                        width: 45.w,
+                                                        height: 45.w,
+                                                        decoration:
+                                                        BoxDecoration(
+                                                          color: Colors.white,
+                                                          borderRadius:
+                                                          BorderRadius
+                                                              .circular(25),
+                                                          boxShadow: [
+                                                            BoxShadow(
+                                                              color: AppColors
+                                                                  .greenColor
+                                                                  .withOpacity(
+                                                                  0.4),
+                                                              blurRadius: 30,
+                                                              spreadRadius: 5,
+                                                            ),
+                                                          ],
+                                                        ),
+                                                        child: Icon(
+                                                          Icons
+                                                              .qr_code_scanner_rounded,
+                                                          size: 25.w,
+                                                          color: AppColors
+                                                              .greenColor,
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+
+                                          SizedBox(height: 6.h),
+
+                                          // ── Swipe Arrow ───────────────
+                                          GestureDetector(
+                                            onVerticalDragUpdate: (details) {
+                                              if (details.delta.dy < -5 &&
+                                                  !_isNavigating) {
+                                                _navigateToQRScanner();
+                                              }
+                                            },
+                                            onTap: _navigateToQRScanner,
+                                            child: AnimatedBuilder(
+                                              animation: _swipeAnimation,
+                                              builder: (context, child) {
+                                                return Transform.translate(
+                                                  offset: Offset(
+                                                      0,
+                                                      -_swipeAnimation
+                                                          .value),
+                                                  child: Container(
+                                                    padding:
+                                                    EdgeInsets.all(4.w),
+                                                    decoration: BoxDecoration(
+                                                      color: AppColors
+                                                          .greenColor
+                                                          .withOpacity(0.2),
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Icon(
+                                                      Icons.arrow_upward_rounded,
+                                                      size: 32.sp,
+                                                      color:
+                                                      AppColors.greenColor,
+                                                    ),
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                          ),
+
+                                          SizedBox(height: 3.h),
+
+                                          // ── Labels ────────────────────
+                                          CustomText(
+                                            text: 'Swipe up to scan QR code',
+                                            style: basicColorBold(
+                                                20, AppColors.greenColor),
+                                          ),
+
+                                          SizedBox(height: 1.h),
+
+                                          Padding(
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 10.w),
+                                            child: CustomText(
+                                              text:
+                                              'Scan the QR code to login securely',
+                                              style: basicColor(
+                                                  15, AppColors.greenColor),
+                                              align: TextAlign.center,
+                                            ),
+                                          ),
+
+                                          SizedBox(height: 4.h),
+
+                                          // ── Instructions toggle ───────
+                                          GestureDetector(
+                                            onTap: _toggleInfo,
+                                            child: Row(
+                                              mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                              children: [
+                                                CustomText(
+                                                  text:
+                                                  'QR Download Instructions',
+                                                  style: TextStyle(
+                                                    fontSize: 15.sp,
+                                                    fontFamily: "Ubuntu",
+                                                    color:
+                                                    AppColors.greenColor,
+                                                    decoration: TextDecoration
+                                                        .underline,
+                                                    decorationColor:
+                                                    AppColors.greenColor,
+                                                  ),
+                                                  align: TextAlign.center,
+                                                ),
+                                                SizedBox(width: 2.w),
+                                                Container(
+                                                  padding:
+                                                  EdgeInsets.all(1.5.w),
+                                                  decoration: BoxDecoration(
                                                     color: AppColors.greenColor
-                                                        .withOpacity(0.3 - index * 0.1),
-                                                    width: 2,
+                                                        .withOpacity(0.2),
+                                                    shape: BoxShape.circle,
+                                                  ),
+                                                  child: Icon(
+                                                    _showInfo
+                                                        ? Icons.close
+                                                        : Icons.info_outline,
+                                                    color: AppColors.greenColor,
+                                                    size: 17.sp,
                                                   ),
                                                 ),
-                                              );
-                                            }),
-
-                                            // Main QR container
-                                            Container(
-                                              width: 45.w,
-                                              height: 45.w,
-                                              decoration: BoxDecoration(
-                                                color: Colors.white,
-                                                borderRadius: BorderRadius.circular(25),
-                                                boxShadow: [
-                                                  BoxShadow(
-                                                    color: AppColors.greenColor
-                                                        .withOpacity(0.4),
-                                                    blurRadius: 30,
-                                                    spreadRadius: 5,
-                                                  ),
-                                                ],
-                                              ),
-                                              child: Icon(
-                                                Icons.qr_code_scanner_rounded,
-                                                size: 25.w,
-                                                color: AppColors.greenColor,
-                                              ),
+                                              ],
                                             ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
-
-                                SizedBox(height: 6.h),
-
-                                // Animated Swipe Arrow
-                                GestureDetector(
-                                  onVerticalDragUpdate: (details) {
-                                    if (details.delta.dy < -5 && !_isNavigating) {
-                                      _navigateToQRScanner();
-                                    }
-                                  },
-                                  onTap: _navigateToQRScanner,
-                                  child: AnimatedBuilder(
-                                    animation: _swipeAnimation,
-                                    builder: (context, child) {
-                                      return Transform.translate(
-                                        offset: Offset(0, -_swipeAnimation.value),
-                                        child: Container(
-                                          padding: EdgeInsets.all(4.w),
-                                          decoration: BoxDecoration(
-                                            color: AppColors.greenColor
-                                                .withOpacity(0.2),
-                                            shape: BoxShape.circle,
                                           ),
-                                          child: Icon(
-                                            Icons.arrow_upward_rounded,
-                                            size: 32.sp,
-                                            color: AppColors.greenColor,
-                                          ),
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ),
 
-                                SizedBox(height: 3.h),
-
-                                // Instruction Text
-                                CustomText(
-                                  text: 'Swipe up to scan QR code',
-                                  style: basicColorBold(20, AppColors.greenColor),
-                                ),
-
-                                SizedBox(height: 1.h),
-
-                                Padding(
-                                  padding: EdgeInsets.symmetric(horizontal: 10.w),
-                                  child: CustomText(
-                                    text: 'Scan the QR code to login securely',
-                                    style: basicColor(15, AppColors.greenColor),
-                                    align: TextAlign.center,
-                                  ),
-                                ),
-
-                                Spacer(),
-                                GestureDetector(
-                                  onTap: _toggleInfo,
-
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      CustomText(
-                                        text: 'QR Download Instructions',
-                                        style: TextStyle(fontSize: 15.sp,fontFamily: "Ubuntu",color: AppColors.greenColor,decoration: TextDecoration.underline,decorationColor: AppColors.greenColor),
-                                   //     style: basicColor(15, AppColors.greenColor),
-                                        align: TextAlign.center,
-
-
+                                          SizedBox(height: 4.h),
+                                        ],
                                       ),
-                                      SizedBox(width: 2.w,),
-
-                                      Container(
-                                        padding: EdgeInsets.all(1.5.w),
-                                        decoration: BoxDecoration(
-                                          color: AppColors.greenColor.withOpacity(0.2),
-                                          shape: BoxShape.circle,
-                                        ),
-                                        child: Icon(
-                                          _showInfo ? Icons.close : Icons.info_outline,
-                                          color: AppColors.greenColor,
-                                          size: 17.sp,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                    ),
+                                  ],
                                 ),
-
-                              ],
+                              ),
                             ),
-                          ),
-
-                          SizedBox(height:4.h),
-                        ],
+                          );
+                        },
                       ),
 
-                      // Info Panel Overlay
+                      // ── Info Panel Overlay ────────────────────────────
                       if (_showInfo)
                         FadeTransition(
                           opacity: _infoFadeAnimation,
@@ -353,7 +399,8 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
                             color: Colors.black.withOpacity(0.85),
                             child: SafeArea(
                               child: SingleChildScrollView(
-                                padding: EdgeInsets.symmetric(horizontal:5.w,vertical: 7.h),
+                                padding: EdgeInsets.symmetric(
+                                    horizontal: 5.w, vertical: 7.h),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -367,7 +414,8 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
                                           decoration: BoxDecoration(
                                             color: AppColors.greenColor
                                                 .withOpacity(0.2),
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius:
+                                            BorderRadius.circular(12),
                                           ),
                                           child: Icon(
                                             Icons.qr_code_2_rounded,
@@ -380,9 +428,7 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
                                           child: CustomText(
                                             text: 'How to Get Your QR Code',
                                             style: basicColorBold(
-                                              22,
-                                              AppColors.greenColor,
-                                            ),
+                                                22, AppColors.greenColor),
                                           ),
                                         ),
                                       ],
@@ -390,12 +436,13 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
 
                                     SizedBox(height: 3.h),
 
-                                    // Instructions Container
+                                    // Steps container
                                     Container(
                                       padding: EdgeInsets.all(4.w),
                                       decoration: BoxDecoration(
                                         color: Colors.white.withOpacity(0.1),
-                                        borderRadius: BorderRadius.circular(16),
+                                        borderRadius:
+                                        BorderRadius.circular(16),
                                         border: Border.all(
                                           color: AppColors.greenColor
                                               .withOpacity(0.3),
@@ -403,7 +450,8 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
                                         ),
                                       ),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                         children: [
                                           _buildStepItem(
                                             stepNumber: '1',
@@ -412,11 +460,9 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
                                             description:
                                             'Login to the Nizaam by Savviyons web application using your credentials',
                                           ),
-
                                           SizedBox(height: 2.h),
                                           _buildDivider(),
                                           SizedBox(height: 2.h),
-
                                           _buildStepItem(
                                             stepNumber: '2',
                                             icon: Icons.settings_rounded,
@@ -424,11 +470,9 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
                                             description:
                                             'Navigate to Settings from the main menu',
                                           ),
-
                                           SizedBox(height: 2.h),
                                           _buildDivider(),
                                           SizedBox(height: 2.h),
-
                                           _buildStepItem(
                                             stepNumber: '3',
                                             icon: Icons.apartment_rounded,
@@ -436,11 +480,9 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
                                             description:
                                             'Select "Society Settings" from the settings menu',
                                           ),
-
                                           SizedBox(height: 2.h),
                                           _buildDivider(),
                                           SizedBox(height: 2.h),
-
                                           _buildStepItem(
                                             stepNumber: '4',
                                             icon: Icons.download_rounded,
@@ -454,19 +496,22 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
 
                                     SizedBox(height: 3.h),
 
-                                    // Important Note
+                                    // Important note
                                     Container(
                                       padding: EdgeInsets.all(3.w),
                                       decoration: BoxDecoration(
                                         color: Colors.orange.withOpacity(0.15),
-                                        borderRadius: BorderRadius.circular(12),
+                                        borderRadius:
+                                        BorderRadius.circular(12),
                                         border: Border.all(
-                                          color: Colors.orange.withOpacity(0.5),
+                                          color:
+                                          Colors.orange.withOpacity(0.5),
                                           width: 1,
                                         ),
                                       ),
                                       child: Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                         children: [
                                           Icon(
                                             Icons.info_outline,
@@ -482,18 +527,14 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
                                                 CustomText(
                                                   text: 'Important Note',
                                                   style: basicColorBold(
-                                                    16,
-                                                    Colors.orange,
-                                                  ),
+                                                      16, Colors.orange),
                                                 ),
                                                 SizedBox(height: 0.5.h),
                                                 CustomText(
                                                   text:
                                                   'Each society has a unique QR code. Make sure you download the correct QR code for your society.',
                                                   style: basicColor(
-                                                    15,
-                                                    Colors.white70,
-                                                  ),
+                                                      15, Colors.white70),
                                                 ),
                                               ],
                                             ),
@@ -510,16 +551,19 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
                                       child: ElevatedButton(
                                         onPressed: _toggleInfo,
                                         style: ElevatedButton.styleFrom(
-                                          backgroundColor: AppColors.greenColor,
-                                          padding:
-                                          EdgeInsets.symmetric(vertical: 2.h),
+                                          backgroundColor:
+                                          AppColors.greenColor,
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 2.h),
                                           shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(12),
+                                            borderRadius:
+                                            BorderRadius.circular(12),
                                           ),
                                         ),
                                         child: CustomText(
                                           text: 'Got it!',
-                                          style: basicColorBold(16, Colors.white),
+                                          style: basicColorBold(
+                                              16, Colors.white),
                                         ),
                                       ),
                                     ),
@@ -549,7 +593,6 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Step number circle
         Container(
           width: 10.w,
           height: 10.w,
@@ -571,21 +614,14 @@ class _SwipeUpScreenState extends State<SwipeUpScreen>
             ),
           ),
         ),
-
         SizedBox(width: 4.w),
-
-        // Content
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
                 children: [
-                  Icon(
-                    icon,
-                    color: AppColors.greenColor,
-                    size: 20.sp,
-                  ),
+                  Icon(icon, color: AppColors.greenColor, size: 20.sp),
                   SizedBox(width: 2.w),
                   Expanded(
                     child: CustomText(

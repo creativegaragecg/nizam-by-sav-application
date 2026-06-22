@@ -1340,31 +1340,33 @@ class _MainLandingPageState extends State<MainLandingPage> {
                         children: [
                           CustomText(
                            text: 'Health Status',
-                            style: basicColor(15,Colors.black )
+                            style: basicColorBold(16,Colors.black )
 
                           ),
 
-                          Padding(
-                            padding:  EdgeInsets.only(right: 3.w),
-                            child: Row(
-                              children: [
-                                CustomText(
-                                    text: healthStatus,
-                                    style: basicColorBold(15,AppColors.iconColor )
 
-                                ),
-                                SizedBox(width: 2.w),
-                                Icon(
-                                  CupertinoIcons.heart_fill,
-                                  size: 12,
-                                  color: AppColors.iconColor,
-                                ),
-                              ],
-                            ),
-                          ),
 
 
                         ],
+                      ),
+                      SizedBox(height: 1.h),
+                      Padding(
+                        padding:  EdgeInsets.only(right: 0.w),
+                        child: Row(
+                          children: [
+                            CustomText(
+                                text: healthStatus,
+                                style: basicColorBold(15,AppColors.iconColor )
+
+                            ),
+                            SizedBox(width: 2.w),
+                            Icon(
+                              CupertinoIcons.heart_fill,
+                              size: 12,
+                              color: AppColors.iconColor,
+                            ),
+                          ],
+                        ),
                       ),
                        SizedBox(height: 1.5.h),
                       Container(
@@ -1421,8 +1423,8 @@ class _MainLandingPageState extends State<MainLandingPage> {
         alignment: Alignment.center,
         children: [
           SizedBox(
-            width: 100,
-            height: 100,
+            width: 100.h,
+            height: 100.w,
             child: CircularProgressIndicator(
               value: percentValue/100,
               strokeWidth: 8,
@@ -1624,10 +1626,15 @@ class _MainLandingPageState extends State<MainLandingPage> {
 
                 Padding(
                   padding: EdgeInsets.only(top: 1.h),
-                  child: SizedBox(
-                    height: 7.h,
-                    width: 27.w,
-                    child: Image.asset(AppImages.splashScreenLogo, fit: BoxFit.cover),
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      maxHeight: 7.h,
+                      maxWidth: 24.w,
+                    ),
+                    child: Image.asset(
+                      AppImages.splashScreenLogo,
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ],

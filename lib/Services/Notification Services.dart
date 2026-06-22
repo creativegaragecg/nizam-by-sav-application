@@ -3,77 +3,10 @@ import 'dart:io';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:savvyions/models/Web Sos.dart';
+import 'package:savvyions/models/Web Sos.dart' hide Priority;
 import 'package:savvyions/Services/Sos Service.dart';
-import 'package:firebase_core/firebase_core.dart'; // ← ADD THIS
 
 
-@pragma('vm:entry-point')
-Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
-
-  // Must show notification manually when app is killed
-  if (message.data['type'] == 'sos') {
-    await _showBackgroundSosNotification(message);
-  }
-}
-
-Future<void> _showBackgroundSosNotification(RemoteMessage message) async {
-  final FlutterLocalNotificationsPlugin plugin =
-  FlutterLocalNotificationsPlugin();
-
-  // Must re-create channel in background isolate
-  const AndroidNotificationChannel channel = AndroidNotificationChannel(
-    'sos_alerts',
-    'SOS Alerts',
-    description: 'Emergency SOS alerts',
-    importance: Importance.max,
-    playSound: true,
-    enableVibration: true,
-    enableLights: true,
-    ledColor: Color(0xFFFF0000),
-  );
-
-  await plugin
-      .resolvePlatformSpecificImplementation
-  <AndroidFlutterLocalNotificationsPlugin>()
-      ?.createNotificationChannel(channel);
-
-  await plugin.initialize(
-    const InitializationSettings(
-      android: AndroidInitializationSettings('@mipmap/launcher_icon'),
-      iOS: DarwinInitializationSettings(),
-    ),
-  );
-
-  final String title =
-      message.notification?.title ?? '⚠ SOS ALERT';
-  final String body =
-      message.notification?.body ?? 'Emergency triggered!';
-
-  await plugin.show(
-    message.hashCode,
-    title,
-    body,
-    const NotificationDetails(
-      android: AndroidNotificationDetails(
-        'sos_alerts',
-        'SOS Alerts',
-        importance: Importance.max,
-        priority: Priority.high,
-        playSound: true,
-        enableVibration: true,
-        color: Color(0xFFFF0000),
-        fullScreenIntent: true,
-      ),
-      iOS: DarwinNotificationDetails(
-        presentAlert: true,
-        presentSound: true,
-        interruptionLevel: InterruptionLevel.critical,
-      ),
-    ),
-  );
-}
 
 /*@pragma('vm:entry-point')
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {

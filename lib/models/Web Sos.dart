@@ -66,29 +66,33 @@ class Datum {
 
 class NotificationElement {
   String? to;
+  String? priority;
   NotificationNotification? notification;
-  Data? data;
   Android? android;
+  Data? data;
 
   NotificationElement({
     this.to,
+    this.priority,
     this.notification,
-    this.data,
     this.android,
+    this.data,
   });
 
   factory NotificationElement.fromJson(Map<String, dynamic> json) => NotificationElement(
     to: json["to"],
+    priority: json["priority"],
     notification: json["notification"] == null ? null : NotificationNotification.fromJson(json["notification"]),
-    data: json["data"] == null ? null : Data.fromJson(json["data"]),
     android: json["android"] == null ? null : Android.fromJson(json["android"]),
+    data: json["data"] == null ? null : Data.fromJson(json["data"]),
   );
 
   Map<String, dynamic> toJson() => {
     "to": to,
+    "priority": priority,
     "notification": notification?.toJson(),
-    "data": data?.toJson(),
     "android": android?.toJson(),
+    "data": data?.toJson(),
   };
 }
 
@@ -114,76 +118,93 @@ class Android {
 
 class AndroidNotification {
   String? channelId;
-  String? sound;
+  bool? fullScreenIntent;
 
   AndroidNotification({
     this.channelId,
-    this.sound,
+    this.fullScreenIntent,
   });
 
   factory AndroidNotification.fromJson(Map<String, dynamic> json) => AndroidNotification(
-    channelId: json["channel_id"],
-    sound: json["sound"],
+    channelId:json["channel_id"],
+    fullScreenIntent: json["full_screen_intent"],
   );
 
   Map<String, dynamic> toJson() => {
     "channel_id": channelId,
-    "sound": sound,
+    "full_screen_intent": fullScreenIntent,
   };
 }
+
+
+
+
+
+
 
 class Data {
   String? type;
   String? sosId;
-  String? reason;
   String? societyName;
-  String? triggeredBy;
   String? status;
+  String? clickAction;
 
   Data({
     this.type,
     this.sosId,
-    this.reason,
     this.societyName,
-    this.triggeredBy,
     this.status,
+    this.clickAction,
   });
 
   factory Data.fromJson(Map<String, dynamic> json) => Data(
     type: json["type"],
     sosId: json["sos_id"],
-    reason: json["reason"],
     societyName: json["society_name"],
-    triggeredBy: json["triggered_by"],
     status: json["status"],
+    clickAction: json["click_action"],
   );
 
   Map<String, dynamic> toJson() => {
-    "type": type,
+    "type":type,
     "sos_id": sosId,
-    "reason": reason,
     "society_name": societyName,
-    "triggered_by": triggeredBy,
     "status": status,
+    "click_action": clickAction,
   };
 }
+
+
+
+
+
+
+
 
 class NotificationNotification {
   String? title;
   String? body;
+  String? androidChannelId;
+  String? sound;
 
   NotificationNotification({
     this.title,
     this.body,
+    this.androidChannelId,
+    this.sound,
   });
 
   factory NotificationNotification.fromJson(Map<String, dynamic> json) => NotificationNotification(
     title: json["title"],
     body: json["body"],
+    androidChannelId: json["android_channel_id"],
+    sound: json["sound"],
   );
 
   Map<String, dynamic> toJson() => {
     "title": title,
     "body": body,
+    "android_channel_id": androidChannelId,
+    "sound": sound,
   };
 }
